@@ -1,0 +1,9 @@
+TODO:
+----
+
+- Support machine specific values interpreters
+- Support version interpretation
+- Improve relocation interpretation
+- Improve chunk oriented design (some related work are present 
+  in elf.utils)
+- Support writing capabilities. I.e: modifications.

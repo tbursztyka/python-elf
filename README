@@ -1,0 +1,77 @@
+Python-ELF
+==========
+
+Python-ELF is a python library targeting ELF binary format manipulation. 
+It is OS and machine independant, or tends to be. It has nothing new nor 
+nothing better than existing libraries and currently is suffers from lacks 
+which makes it much more a draft than anything else. So for a real usage, 
+consider using something else.
+
+Its goal it to make, anyway, static ELF binary manipulation easy. The Q&D 
+dumpelf.py is an example on how current ease of use level is. 
+
+Contributions are welcome!
+
+Features
+--------
+
+It can read and interpret "allmost" any ELF-specific part in an ELF binary. 
+E.g.: it cannot intepret DWARF2 specific sections. 
+
+Limitations
+-----------
+
+- no writing capabilities...
+- doet not yet interpret machine specific data, though necessary values interpreters 
+  are already present.
+- No version part interpretation.
+- Only basic relocation interpretation
+- Not yet definitive architecture
+- Prone to error while binary owns anti-re tricks. (could be easily fixed, some case
+  are already handled)
+
+Design
+------
+
+Everything in python-elf is thought and handled as a "chunk". An ELF file is a chunk
+made of multiple other chunks.
+
+Here is a quick overview on the design:
+
+  ----------> Chunk <---- Header <------------
+ |     |                            |         |
+ |     |                            |         |
+ |    Elf-----------------------ElfHeader     |
+ |                                            |
+ |                                            |
+ \----- Section-------------SectionHeader-----/
+        Program-------------ProgramHeader
+         ...                    ...
+
+Elf class is the ones who owns all other chunks (sections/programs...)
+Section owns Symbol, Relocation, Dynamic, Note...
+
+
+Using python-elf
+----------------
+
+(through python interpreter)
+>>> from elf.elf_binary import Elf
+>>> bin = Elf("/some/path/some_file_name")
+>>>
+
+Some printer helper functions can be found in from elf.printers import printHeader
+It prints out only headers of course, in a human readable way.
+
+
+Important note
+--------------
+
+As any other ELF manipulation library, you MUST know how ELF format is made to use 
+python-elf.
+
+Contact
+-------
+
+For any further information, help, ideas, contributions, critics: contact 
+me at t.bursztyka@lyua.org
