@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  See AUTHORS
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by

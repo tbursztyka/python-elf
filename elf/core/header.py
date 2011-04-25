@@ -1,5 +1,5 @@
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  See AUTHORS
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -30,19 +30,21 @@ except ImportError:
 
 class Header( Chunk ):
     """ Basic Header class: it targets all headers in ELF format """
-    """ descriptions of bit fields """
+
+    # descriptions of bit fields
     descriptions = None
-    """ bit fields structure format """
+    # bit fields structure format
     format = None
-    """ compound field descriptions """
+    # compound field descriptions
     cf_descriptions = None
-    """ compound field format """
+    # compound field format
     cf_format = None
-    """ Human Readable values for certain field """
+    # Human Readable values for certain field
     hr_values = None
     
     def __init__(self, prop=None, offset=None):
         """ Constructor """
+
         self.fields = None
         
         if not self.format:
@@ -101,6 +103,7 @@ class Header( Chunk ):
     
     def __getattr__(self, name):
         """ Attribute getter rewrite """
+
         if self.descriptions != None and name in self.descriptions:
             return self.fields[self.descriptions.index(name)]
         
@@ -114,18 +117,19 @@ class Header( Chunk ):
     
     def __setattr__(self, name, value):
         """ Attribute setter rewrite """
+
         if self.descriptions != None and name in self.descriptions:
             self.modified = True
             self.fields[self.descriptions.index(name)] = value
 
         elif self.cf_descriptions != None and name in self.cf_descriptions:
             getattr(self,  "set_"+name)(value)
-
         else:
-            self.__dict__[name] = value
+            Chunk.__setattr__(self, name, value)
     
     def load(self, offset=None, filemap=None):
         """ Loads header fields according to descriptions/format """
+
         Chunk.load(self, offset, filemap)
         
         self.fields = list(unpack_from(''.join([self.prop.endian]+self.format), 
@@ -135,6 +139,7 @@ class Header( Chunk ):
 
     def todata(self):
         """ Transcode fields into a byte string """
+
         data = ''  
         for idx in range(0, len(self.format)):
             data += pack(''.join([self.prop.endian]+self.format[idx]),
@@ -145,13 +150,10 @@ class Header( Chunk ):
     # UNUSABLE IN ITS CURRENT STATUS
     def write(self, offset=None, filemap=None):
         """ Writes header fields """
+
         self.data = self.toData()
 
         Chunk.write(self, offset, filemap)
-    
-    def verify(self):
-        """ Basic sanity check """
-        pass
 
 #######
 # EOF #

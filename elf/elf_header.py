@@ -1,5 +1,5 @@
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  Tomasz Bursztyka
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -219,18 +219,16 @@ class ElfHeader( Header ):
     format_64 = [ 'h', 'h', 'i', 'Q', 'Q', 'Q', 'i', 
                   'h', 'h', 'h', 'h', 'h', 'h' ]
     
-    def __init__(self, e_ident=None, offset=None):
+    def __init__(self, e_ident, offset=None):
         self.e_ident = e_ident
-        
+
         if offset == None:
             offset = calcsize(''.join(Eident.format))
         
-        Header.__init__(self, self.e_ident.prop, offset)
+        Header.__init__(self, e_ident.prop, offset)
 
-    def write(self, offset=None, filemap=None):
-        self.e_ident.write(offset, filemap)
-        
-        Header.write(self, offset, filemap)
+    def chuncks(self):
+        return [self.e_ident, self]
 
 #######
 # EOF #

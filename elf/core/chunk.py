@@ -1,5 +1,5 @@
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  Tomasz Bursztyka
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -15,12 +15,32 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+""" ChunkCounter class """
+
+class ChunkCounter( object ):
+    """ Basic Singleton counter class for chunks """
+
+    _instance = None
+    count = 0
+
+    def __new__(cls):
+        """ Singleton instanciation """
+        if cls._instance is None:
+            cls._instance = object.__new__(cls)
+            cls._instance.count = -1
+
+        cls._instance.count += 1
+
+        return cls._instance
+
 """ Chunk class """
 
-class Chunk:
+class Chunk( object ):
     """ Basic Chunk class: all parts of ELF format are assumed as chunks """
+
     def __init__(self, prop=None, load=False, offset=None, size=0):
         """ Constructor """
+
         self.prop = prop
         self.offset_start = offset
         self.offset_end = offset + size
@@ -28,31 +48,36 @@ class Chunk:
         self.new_offset_end = None
         self.size = size
         self.data = None
-
-        # True if relevant element has been modified
         self.modified = False
-        
+        self.for_removal = False
         self.inside = None # unique reference
         self.includes = [] # Mutltiple includes, see accessors below
-        self.overlap = None
-        self.partly_before = None
-        self.partly_after = None
+
+        self.counter = ChunkCounter()
 
         if load:
             self.load()
 
+    def __del__(self):
+        """ Finalize before deletion """
+        self.finalize()
+
     def __setattr__(self, name, value):
         """ Attribute setter rewrite """
-        if name == 'data':
+
+        self.__dict__[name] = value
+
+        if name == 'data' and value is not None:
             self.modified = True
             # Redefine the size 
-            #self.size = 
-        if name == 'new_offset_start':
+            self.size = len(value)
+
+        elif name == 'new_offset_start':
             self.modified = True
-        self.__dict__[name] = value
-    
+
     def load(self, offset=None, filemap=None):
         """ Loads chunk content into data attribute from filemap """
+
         if offset == None:
             if self.offset_start == None:
                 return
@@ -72,10 +97,31 @@ class Chunk:
 
         f_m.seek(self.offset_start)
         self.data = f_m.read(self.size)
-    
+
+    def remove(self, remove = True):
+        """ Mark the chunk for removal """
+
+        self.for_removal = remove
+
+    def add_include(self, include):
+        """ add an include to the chunk, this chunk becomes the parent """
+        if include not in self.includes:
+            self.includes.append(include)
+            include.inside = self
+
+    def chunks(self):
+        """ Returns the chunks it possesses """
+
+        return [self]
+
+    def finalize(self):
+        """ Decreasing the ChunkCounter """
+        self.counter.count -= 1
+
     # UNUSABLE IN ITS CURRENT STATUS
     def write(self, offset=None, filemap=None):
         """ Writes chunk content into filemap """
+
         if not self.modified and not self.prop.backup:
             return
         
@@ -107,21 +153,6 @@ class Chunk:
         f_m.write(self.data)
         
         self.data = None
-    
-    # EXPERIMENTAL (see utils.py)
-    def addinclude(self, include):
-        """ add an include to the chunk, this chunk becomes the parent """
-        if include not in self.includes:
-            self.includes.append(include)
-            include.inside = self
-    
-    # EXPERIMENTAL (see utils.py)
-    def delinclude(self, include):
-        """ del an include, this chunk is no more the parent of it """
-        if include in self.includes:
-            self.includes.remove(include)
-            include.inside = None
-            # Apply removal on all referees: offsets
 
 #######
 # EOF #

@@ -1,5 +1,5 @@
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  Tomasz Bursztyka
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -125,6 +125,9 @@ class Program( Chunk ):
 
         Chunk.__init__(self, prop=self.header.prop, load=True, offset=self.header.p_offset,
                        size=self.header.p_filesz)
+
+    def chunks(self):
+        return [self, self.header]
 
 #######
 # EOF #

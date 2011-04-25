@@ -1,5 +1,5 @@
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  Tomasz Bursztyka
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -17,12 +17,6 @@
 
 # Utility functions
 
-from elf.core.property import *
-from elf.elf_header import *
-from elf.section import *
-from elf.symbol import *
-from elf.program import *
-
 def getNameFromStrTab(index, strtab):
     if index >= len(strtab):
         return 'null'
@@ -39,137 +33,32 @@ def getNameFromStrTab(index, strtab):
 
     return name
 
-def isChunkVoid(c):
-    if c.offset_start == c.offset_end:
-        return True
-    
-    return False
-
-def isChunkVoidInside(c1, c2):
-    if isChunkVoid(c1) and c1.offset_start == c2.offset_start:
-        return True
-
-    return False
-
-# Is c1 before c2?
-def isChunkBefore(c1, c2):
-    if c1.offset_start < c2.offset_start and c1.offset_end <= c2.offset_start:
-        return True
-
-    return False
-
-# Is c1 after c2?
-def isChunkAfter(c1, c2):
-    if c1.offset_start >= c2.offset_end and c1.offset_end > c2.offset_end:
-        return True
-
-    return False
-
-# Is c1 partially before c2?
-def isChunkPartlyBefore(c1, c2):
-    if c1.offset_start < c2.offset_start and c1.offset_end < c2.offset_end:
-        if c1.offset_end > c2.offset_start:
-            return True
-
-    return False
-
-# Is c1 partially after c2?
-def isChunkPartlyAfter(c1, c2):
-    return isChunkPartlyBefore(c2, c1)
-
-# Is c1 overlapping c2?
-def isChunkOverlapping(c1, c2):
-    if c1.offset_start == c2.offset_start and c1.offset_end == c2.offset_end:
-        return True
-
-    return False
-
-# Is c1 in c2?
-def isChunkInside(c1, c2):
-    if isChunkOverlapping(c1, c2):
-        return True
-
-    if c1.offset_start >= c2.offset_start and c1.offset_end <= c2.offset_end:
-        return True
-
-    return False
-
-def isChunkSuperior(c1, c2):
-    if isChunkBefore(c1, c2):
-        return True
-
-    if isChunkPartlyBefore(c1, c2):
-        return True
-
-    if isChunkInside(c2, c1):
-        return True
-
-    if isChunkOverlapping(c1, c2):
-        return True
-
-    return False
-
-def heapify(chunks, node, n):
-    k = node
-    if k == 0:
-        j = 1
+def compareChunks(x, y):
+    if x.offset_start < y.offset_start:
+        return -1
+    elif x.offset_start == y.offset_start:
+        if x.offset_end < y.offset_end:
+            return 1
+        elif x.offset_end > y.offset_end:
+            return -1
     else:
-        j = 2*k
+        return 1
 
-    while j <= n:
-        if j < n and isChunkSuperior(chunks[j], chunks[j+1]):
-            j += 1
-            
-        if isChunkSuperior(chunks[k], chunks[j]):
-            xchg = chunks[k]
-            chunks[k] = chunks[j]
-            chunks[j] = xchg
+    return 0
 
-            k = j
-            j = 2 * k
+def orderChunks(lst, n_p = 0, n_c = 1):
+    if len(lst) <= n_c:
+        return 0
+
+    while(n_c > 0):
+        p = lst[n_p]
+        c = lst[n_c]
+        if c.offset_start <= p.offset_end and c.offset_end <= p.offset_end:
+            print "Add %d into %d" % (n_c, n_p)
+            p.add_include(c)
+
+            n_c = orderChunks(lst, n_c, n_c+1)
         else:
-            break
+            return n_c
 
-def sortChunks(chunks):
-    length = len(chunks)
-    for i in range(length-1, -1, -1):
-        heapify(chunks, i, length-1)
 
-    for i in range(length-1, 0, -1):
-        xchg = chunks[0]
-        chunks[0] = chunks[i]
-        chunks[i] = xchg
-
-        heapify(chunks, 0, i - 1)
-
-def makeChunkTree(chunks):
-    sortChunks(chunks)
-
-    for i in range(len(chunks)-1, 0, -1):
-        if isChunkPartlyAfter(chunks[i], chunks[i-1]):
-            chunks[i].partly_after = chunks[i-1]
-            chunks[i-1].partly_before = chunks[i]
-            continue
-        
-        if isChunkOverlapping(chunks[i], chunks[i-1]):
-            chunks[i].overlap = chunks[i-1]
-            chunks[i-1].addinclude(chunks[i])
-            continue
-
-        #for j in range(i-1, 0, -1):
-        if isChunkInside(chunks[i], chunks[i-1]):
-            chunks[i-1].addinclude(chunks[i])
-
-    for i in range(len(chunks)-1, 0, -1):
-        for j in range(i-1, 0, -1):
-            if isChunkInside(chunks[i], chunks[j]):
-                if chunks[i].inside != None:
-                    chunks[j].addinclude(chunks[i])
-
-    tree = []
-    for c in chunks:
-        tree.append(c)
-
-    for t in tree:
-        if t.inside != None:
-            chunks.remove(t)

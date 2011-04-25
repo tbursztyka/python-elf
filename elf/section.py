@@ -1,5 +1,5 @@
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  See AUTHORS
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -212,9 +212,15 @@ class Section( Chunk ):
         self.header = shdr
         self.name = 'null'
 
+        self.strtab = {}
+        self.symtab = []
+        self.relocs = []
+        self.dynamic = []
+        self.note = []
+
         Chunk.__init__(self, prop=self.header.prop, load=True, 
                        offset=self.header.sh_offset, size=self.header.sh_size)
-    
+
     def load(self, offset=None, filemap=None):
         # Call specific loading func, depending on sh_type
         if self.header.sh_type == shdr_type['SHT_SYMTAB']:
@@ -233,20 +239,19 @@ class Section( Chunk ):
             self.loadNote()
         else:
             Chunk.load(self)
-            
+
     def loadSymTab(self):
-        self.symtab = []
         off = self.offset_start
         for ent_count in range(0, self.size/self.header.sh_entsize):
             symtab_entry = SymbolTableEntry(self.prop, off)
             
             self.symtab.append(symtab_entry)
             off += self.header.sh_entsize 
-    
+
     def loadStrTab(self):
-        self.strtab = {}
         if self.size <= 0:
             return
+
         format = self.prop.endian+('s'*self.size)
 
         Chunk.load(self)
@@ -256,7 +261,6 @@ class Section( Chunk ):
             self.strtab.append('\0')
 
     def loadRelocs(self, addends=False):
-        self.relocs = []
         off = self.offset_start
         
         for ent_count in range(0, self.size/self.header.sh_entsize):
@@ -269,7 +273,6 @@ class Section( Chunk ):
             off += self.header.sh_entsize
 
     def loadDynamic(self):
-        self.dynamic = []
         off = self.offset_start
         for ent_count in range(0, self.size/self.header.sh_entsize):
             dynamic_entry = DynamicSectionEntry(self.prop, off)
@@ -278,7 +281,6 @@ class Section( Chunk ):
             off += self.header.sh_entsize 
 
     def loadNote(self):
-        self.note = []
         off = self.header.sh_offset
         size = self.header.sh_size
         while size > 0:
@@ -288,6 +290,18 @@ class Section( Chunk ):
             self.note.append(note)
 
             size = size - n_hdr.size - note.size
+
+    def chunks(self):
+        c_lst = [self, self.header]
+        
+        c_lst.extend(self.symtab)
+        c_lst.extend(self.relocs)
+        c_lst.extend(self.dynamic)
+        
+        for c in self.note:
+            c_lst.extend(c.chunks())
+
+        return c_lst
 
 #######
 # EOF #

@@ -1,5 +1,5 @@
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  Tomasz Bursztyka
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -105,9 +105,9 @@ class SymbolTableEntry( Header ):
         }
 
     def __init__(self, prop=None, offset=None):
-        Header.__init__(self, prop, offset)
- 
         self.name = 'null'
+
+        Header.__init__(self, prop, offset)
 
     def get_st_type(self):
         return (self.st_info & 0xf)

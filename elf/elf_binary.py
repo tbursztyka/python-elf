@@ -1,5 +1,5 @@
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  See AUTHORS
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from mmap import mmap, ACCESS_READ, ACCESS_WRITE
+from mmap import mmap, ACCESS_READ, ACCESS_WRITE, PAGESIZE
 from elf.core.property import Property
 from elf.core.chunk import Chunk
 from elf.elf_header import Eident, ElfHeader
@@ -25,9 +25,13 @@ from elf.program import ProgramHeader, Program
 from elf.utils import getNameFromStrTab
 from os.path import getsize
 
+""" Elf class """
+
 class Elf( Chunk ):
-    " Elf class """
+    """ Elf class """
     def __init__(self, filename, access='r', load=True, backup=False):
+        """ Constructor """
+        
         self.access = access
         
         if self.access == 'w':
@@ -36,52 +40,58 @@ class Elf( Chunk ):
             mode = ACCESS_READ
         else:
             mode = None
-        
+
         size = getsize(filename)
-        
+       
         self.prop = Property(mode, backup, filename, size_src=size)
-        
+
         self.header = None
         self.sections = []
         self.programs = []
-        self.chunks = []
         
         Chunk.__init__(self, prop=self.prop, load=load, offset=0, size=size)
 
     def load(self, offset=None, filemap=None):
-        self.loadBinary()
-        self.loadHeader()
-        self.loadPrograms()
-        self.loadSections()
-        self.loadSectionsNames()
-        self.loadSymbolsNames()
+        """ Loads the ELF file and all specific parts """
 
-    def loadBinary(self, filename=None):
+        self.load_binary(offset, filemap)
+        self.load_header()
+        self.load_programs()
+        self.load_sections()
+        self.load_sections_names()
+        self.load_symbols_names()
+
+    def load_binary(self, filename=None, offset=None, filemap=None):
+        """ Loads the ELF file into a memory mapped file """
+
         if filename == None:
             filename = self.prop.filename
         
         self.prop.file_src = file(filename, 'r+')
         self.prop.map_src = mmap(self.prop.file_src.fileno(), 
                                  0, access=self.prop.mode)
+
+        Chunk.load(self, offset, filemap)
     
-    def loadHeader(self, hdr_off=None):
+    def load_header(self, hdr_off=None):
+        """ Loads ELF header """
+
         if hdr_off == None:
             hdr_off = 0
         
         # eident can be loaded even if self.prop.arch is not the same 
         # as machine or file's value
-        eident = Eident(prop=self.prop, offset=hdr_off)
-        
-        # Now we set the files's value 
-        self.prop.arch = eident.getArch()
-        self.prop.endian = eident.getEndian()
-        
-        self.header = ElfHeader(eident)
+        e_ident = Eident(prop=self.prop, offset=hdr_off)
 
-        if not self.header in self.chunks:
-            self.chunks.append(self.header)
+        # Now we set the files's value 
+        self.prop.arch = e_ident.getArch()
+        self.prop.endian = e_ident.getEndian()
+        
+        self.header = ElfHeader(e_ident)
     
-    def loadSections(self, shdr_off=None, num=None, ent_size=None):
+    def load_sections(self, shdr_off=None, num=None, ent_size=None):
+        """ Loads ELF sections """
+
         if shdr_off == None:
             shdr_off = self.header.e_shoff
         
@@ -101,14 +111,15 @@ class Elf( Chunk ):
         off = shdr_off
         for ndx in range(0, num):
             shdr = SectionHeader(self.prop, off)
+
             sec = Section(shdr)
             off += shdr.size
-            self.sections.append(sec)
 
-            if not sec in self.chunks:
-                self.chunks.append(sec)
+            self.sections.append(sec)
     
-    def loadPrograms(self, phdr_off=None, num=None, ent_size=None):
+    def load_programs(self, phdr_off=None, num=None, ent_size=None):
+        """ Loads ELF programs """
+
         if phdr_off == None:
             phdr_off = self.header.e_phoff
         
@@ -124,15 +135,15 @@ class Elf( Chunk ):
         off = phdr_off
         for ndx in range(0, num):
             phdr = ProgramHeader(self.prop, off)
+
             prg = Program(phdr)
             off += phdr.size
-            self.programs.append(prg)
 
-            if not prg in self.chunks:
-                self.chunks.append(prg)
+            self.programs.append(prg)
     
-    def loadSectionsNames(self):
-        # Load section name from shstrtab if possible
+    def load_sections_names(self):
+        """ Loads sections names from shstrtab if possible """
+
         # index should exists in section table
         if self.header.e_shstrndx >= len(self.sections):
             return
@@ -149,7 +160,9 @@ class Elf( Chunk ):
         for sec in self.sections:
             sec.name = getNameFromStrTab(sec.header.sh_name, shstrtab.strtab)
     
-    def loadSymbolsNames(self):
+    def load_symbols_names(self):
+        """ Loads symbols names from symtab if possible """
+
         # let's proceed through all sections to find symtab or dynsym sections
         for sec in self.sections:
             if sec.header.sh_type != shdr_type['SHT_SYMTAB']:
@@ -175,8 +188,30 @@ class Elf( Chunk ):
                     if s_entry.st_type == symtab_type['STT_SECTION']:
                         s_entry.name = self.sections[s_entry.st_shndx].name
 
+    def count(self):
+        """ Returns the current count of chunks this file is made of """
+
+        return self.counter.count
+
+    def chunks(self):
+        """ Returns the list of all chunks including the current Elf instance """
+
+        chunk_lst = [self]
+
+        chunk_lst.extend(self.header.chunks())
+
+        for chunk in self.sections:
+            chunk_lst.extend(chunk.chunks())
+
+        for chunk in self.programs:
+            chunk_lst.extend(chunk.chunks())
+
+        return chunk_lst
+
     # NOT USABLE IN ITS CURRENT STATUS!
     def write(self):
+        """ Writes the current ELF map into a file """
+
         if self.prop.backup:
             f_dst = file(self.prop.filename+'_mod', 'w+')
             f_dst.write('\n'*PAGESIZE)
@@ -185,7 +220,7 @@ class Elf( Chunk ):
             self.prop.map_dst = mmap(self.prop.file_dst.fileno(), 
                                      0, access=self.prop.mode)
             
-            self.prop.map_dst.resize(self.calculSize())
+            self.prop.map_dst.resize(self.calcul_size())
         
         # We first write the "contents"
         # and then: the headers
@@ -216,14 +251,20 @@ class Elf( Chunk ):
         self.header.write()
     
     def finalize(self):
+        """ Close map before deleting the object """
+
         if self.prop.map_dst != None:
             self.prop.map_dst.close()
             self.prop.file_dst.close()
         
         self.prop.map_src.close()
         self.prop.file_src.close()
+
+        Chunk.finalize(self)
     
-    def calculSize(self):
+    def calcul_size(self):
+        """ Recompute the file size """
+
         # FIXME: re-compute the TRUE size
         return self.prop.size_src
 

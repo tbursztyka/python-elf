@@ -1,5 +1,5 @@
 """
-  Copyright (C) 2008-2010  Tomasz Bursztyka
+  Copyright (C) 2008-2011  Tomasz Bursztyka
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -75,6 +75,9 @@ class Note( Chunk ):
         self.desc = str(self.data[self.header.n_namesz:])
 
         self.data = None
+
+    def chunks(self):
+        return [self, self.header]
 
 #######
 # EOF #
