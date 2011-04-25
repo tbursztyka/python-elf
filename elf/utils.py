@@ -17,7 +17,6 @@
 
 # Utility functions
 
-from mmap import mmap, PROT_READ, PROT_WRITE, PAGESIZE
 from elf.core.property import *
 from elf.elf_header import *
 from elf.section import *

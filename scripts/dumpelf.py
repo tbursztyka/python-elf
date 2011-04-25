@@ -38,7 +38,7 @@ cannot_disassemble = False
 try:
     from distorm import Decode, Decode32Bits, Decode64Bits
 except:
-    cannot_disassemble = true
+    cannot_disassemble = True
     pass
 
 if len(sys.argv) <= 1:

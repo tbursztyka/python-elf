@@ -19,7 +19,14 @@
 
 from elf.core.property import ARCH_32, ARCH_64
 from elf.core.chunk import Chunk
-from struct import pack, unpack_from, calcsize
+from struct import pack, calcsize
+try:
+    from struct import unpack_from
+except ImportError:
+    from struct import unpack
+    def unpack_from(fmt, buf, offset=0):
+        size = calcsize(fmt)
+        return unpack(fmt, buf[offset:offset + size])
 
 class Header( Chunk ):
     """ Basic Header class: it targets all headers in ELF format """

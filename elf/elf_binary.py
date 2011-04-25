@@ -15,7 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from mmap import mmap, PROT_READ, PROT_WRITE
+from mmap import mmap, ACCESS_READ, ACCESS_WRITE
 from elf.core.property import Property
 from elf.core.chunk import Chunk
 from elf.elf_header import Eident, ElfHeader
@@ -31,9 +31,9 @@ class Elf( Chunk ):
         self.access = access
         
         if self.access == 'w':
-            mode = PROT_READ | PROT_WRITE
+            mode = ACCESS_READ | ACCESS_WRITE
         elif self.access == 'r':
-            mode = PROT_READ
+            mode = ACCESS_READ
         else:
             mode = None
         
@@ -62,7 +62,7 @@ class Elf( Chunk ):
         
         self.prop.file_src = file(filename, 'r+')
         self.prop.map_src = mmap(self.prop.file_src.fileno(), 
-                                 0, prot=self.prop.mode)
+                                 0, access=self.prop.mode)
     
     def loadHeader(self, hdr_off=None):
         if hdr_off == None:
@@ -183,7 +183,7 @@ class Elf( Chunk ):
             f_dst.close()
             self.prop.file_dst = file(self.prop.filename+'_mod', 'r+')
             self.prop.map_dst = mmap(self.prop.file_dst.fileno(), 
-                                     0, prot=self.prop.mode)
+                                     0, access=self.prop.mode)
             
             self.prop.map_dst.resize(self.calculSize())
         

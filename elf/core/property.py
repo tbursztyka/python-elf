@@ -17,9 +17,8 @@
 
 """ Property type """
 
-from struct import pack
-from ctypes import sizeof, c_void_p
-from mmap import PROT_READ
+from struct import pack, calcsize
+from mmap import ACCESS_READ
 
 LITTLE_ENDIAN = '<'
 BIG_ENDIAN = '>'
@@ -36,7 +35,7 @@ class Property:
         """ Constructor """
         self.mode = mode
         if self.mode == None:
-            self.mode = PROT_READ
+            self.mode = ACCESS_READ
         
         self.backup = backup
         self.filename = filename
@@ -59,7 +58,7 @@ class Property:
         else:
             self.endian = BIG_ENDIAN
         
-        if sizeof(c_void_p) == 8:
+        if calcsize("P") == 8:
             self.arch = ARCH_64
         else:
             self.arch = ARCH_32

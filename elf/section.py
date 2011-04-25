@@ -24,7 +24,13 @@ from elf.symbol import SymbolTableEntry
 from elf.relocation import RelocationEntry, RelocationAEntry
 from elf.dynamic import DynamicSectionEntry
 from elf.note import NoteHeader, Note
-from struct import unpack_from
+try:
+    from struct import unpack_from
+except ImportError:
+    from struct import calcsize, unpack
+    def unpack_from(fmt, buf, offset=0):
+        size = calcsize(fmt)
+        return unpack(fmt, buf[offset:offset + size])
 
 shdr_index = {
     'SHN_UNDEF'              : 0,
