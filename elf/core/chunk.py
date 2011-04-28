@@ -15,7 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-""" ChunkCounter class """
+""" ChunkCounter and Chunk classes """
 
 class ChunkCounter( object ):
     """ Basic Singleton counter class for chunks """
@@ -25,6 +25,7 @@ class ChunkCounter( object ):
 
     def __new__(cls):
         """ Singleton instanciation """
+
         if cls._instance is None:
             cls._instance = object.__new__(cls)
             cls._instance.count = -1
@@ -33,7 +34,6 @@ class ChunkCounter( object ):
 
         return cls._instance
 
-""" Chunk class """
 
 class Chunk( object ):
     """ Basic Chunk class: all parts of ELF format are assumed as chunks """
@@ -44,14 +44,13 @@ class Chunk( object ):
         self.prop = prop
         self.offset_start = offset
         self.offset_end = offset + size
-        self.new_offset_start = None
-        self.new_offset_end = None
         self.size = size
         self.data = None
         self.modified = False
-        self.for_removal = False
-        self.inside = None # unique reference
-        self.includes = [] # Mutltiple includes, see accessors below
+        # unique reference
+        self.inside = None
+        # Mutltiple includes, see accessors below
+        self.includes = []
 
         self.counter = ChunkCounter()
 
@@ -60,6 +59,7 @@ class Chunk( object ):
 
     def __del__(self):
         """ Finalize before deletion """
+
         self.finalize()
 
     def __setattr__(self, name, value):
@@ -71,8 +71,9 @@ class Chunk( object ):
             self.modified = True
             # Redefine the size 
             self.size = len(value)
+            self.offset_end = self.offset_start + self.size
 
-        elif name == 'new_offset_start':
+        elif name.find('offset') > -1 and value is not None:
             self.modified = True
 
     def load(self, offset=None, filemap=None):
@@ -98,13 +99,14 @@ class Chunk( object ):
         f_m.seek(self.offset_start)
         self.data = f_m.read(self.size)
 
-    def remove(self, remove = True):
-        """ Mark the chunk for removal """
+    def remove(self, impact = False):
+        """ Remove the chunk """
 
-        self.for_removal = remove
+        pass
 
     def add_include(self, include):
         """ add an include to the chunk, this chunk becomes the parent """
+
         if include not in self.includes:
             self.includes.append(include)
             include.inside = self
@@ -116,43 +118,35 @@ class Chunk( object ):
 
     def finalize(self):
         """ Decreasing the ChunkCounter """
+
         self.counter.count -= 1
 
-    # UNUSABLE IN ITS CURRENT STATUS
-    def write(self, offset=None, filemap=None):
-        """ Writes chunk content into filemap """
+    def write(self, filemap):
+        """ Write the chunk and its includes """
 
-        if not self.modified and not self.prop.backup:
-            return
-        
-        if offset == None:
-            if self.new_offset_start != None:
-                offset = self.new_offset_start
-            elif self.offset_start != None:
-                offset = self.offset_start
-            else:
-                return
-        
-        if self.size <= 0:
-            return
-        
-        f_m = None
-        if filemap != None:
-            f_m = filemap
-        elif not self.prop.backup and self.prop.map_src != None:
-            f_m = self.prop.map_src
-        elif self.prop.backup and self.prop.map_dst != None:
-            f_m = self.prop.map_dst
-        else:
-            return
-        
-        if self.data == None:
-            Chunk.load(self, offset)
-        
-        f_m.seek(self.offset_start)
-        f_m.write(self.data)
-        
-        self.data = None
+        filemap.seek(self.offset_start)
+
+        if len(self.includes) == 0:
+            filemap.write(self.data)
+
+            return self.size
+
+        cur_data = 0
+        cur_offset = self.offset_start
+
+        for inc in self.includes:
+            if cur_offset < inc.offset_start:
+                filemap.write(self.data[cur_data:inc.offset_start - cur_offset])
+
+                cur_data += inc.offset_start - cur_offset
+                cur_offset = inc.offset_start
+
+            w_size = inc._write(filemap)
+
+            cur_data += w_size
+            cur_offset += w_size
+
+        return cur_data
 
 #######
 # EOF #

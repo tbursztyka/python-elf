@@ -76,8 +76,8 @@ binfile = sys.argv[len(sys.argv)-1]
 
 try:
     bin = Elf(binfile)
-except:
-    print "Could not open %s" % binfile
+except Exception, e:
+    print "Could not open %s - %s" % (binfile, e)
     sys.exit(-1)
 
 print 'ELF Header:'

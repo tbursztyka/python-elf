@@ -98,7 +98,7 @@ class Header( Chunk ):
             except AttributeError:
                 self.hr_values = {}
 
-        Chunk.__init__(self, prop, True, offset, 
+        Chunk.__init__(self, prop, True, offset,
                        calcsize(''.join(self.format)))
     
     def __getattr__(self, name):
@@ -134,8 +134,6 @@ class Header( Chunk ):
         
         self.fields = list(unpack_from(''.join([self.prop.endian]+self.format), 
                                        self.data))
-        
-        self.data = None
 
     def todata(self):
         """ Transcode fields into a byte string """
@@ -146,14 +144,13 @@ class Header( Chunk ):
                          self.fields[idx])
         
         return data
-    
-    # UNUSABLE IN ITS CURRENT STATUS
-    def write(self, offset=None, filemap=None):
+
+    def write(self, filemap=None):
         """ Writes header fields """
 
         self.data = self.toData()
 
-        Chunk.write(self, offset, filemap)
+        Chunk.write(self, filemap)
 
 #######
 # EOF #

@@ -208,7 +208,6 @@ class Elf( Chunk ):
 
         return chunk_lst
 
-    # NOT USABLE IN ITS CURRENT STATUS!
     def write(self):
         """ Writes the current ELF map into a file """
 
@@ -220,35 +219,14 @@ class Elf( Chunk ):
             self.prop.map_dst = mmap(self.prop.file_dst.fileno(), 
                                      0, access=self.prop.mode)
             
-            self.prop.map_dst.resize(self.calcul_size())
+            self.prop.map_dst.resize(self.size)
         
-        # We first write the "contents"
-        # and then: the headers
-        ndx = 0
-        for prg in self.programs:
-            print 'ndx %d offset %d size %d' % (ndx, prg.header.p_offset, 
-                                                prg.header.p_filesz)
-            prg.write()
-            ndx += 1
-        
-        ndx = 0
-        for sec in self.sections:
-            print 'ndx %d offset %d size %d' % (ndx, sec.header.sh_offset, 
-                                                sec.header.sh_size)
-            sec.write()
-            ndx += 1
-            
-        off = self.header.e_phoff
-        for prg in self.programs:
-            prg.header.write(off)
-            off += prg.header.size
+        Chunk.write(self, self.prop.map_dst)
 
-        off = self.header.e_shoff
-        for sec in self.sections:
-            sec.header.write(off)
-            off += sec.header.size
-
-        self.header.write()
+        self.prop.map_dst.close()
+        self.prop.map_dst = None
+        self.prop.file_dst.close()
+        self.prop.file_dst = None
     
     def finalize(self):
         """ Close map before deleting the object """
@@ -261,12 +239,6 @@ class Elf( Chunk ):
         self.prop.file_src.close()
 
         Chunk.finalize(self)
-    
-    def calcul_size(self):
-        """ Recompute the file size """
-
-        # FIXME: re-compute the TRUE size
-        return self.prop.size_src
 
 #######
 # EOF #

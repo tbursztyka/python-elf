@@ -15,11 +15,11 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# Note elements
+""" NoteHeader and Note classes """
 
 from elf.core.property import VALUE_FIXED
 from elf.core.header import Header
-from elf.core.chunk import Chunk
+from elf.core.page import Page
 from struct import calcsize
 
 nhdr_core_type = {
@@ -57,27 +57,20 @@ class NoteHeader( Header ):
         'n_type' : [ VALUE_FIXED, nhdr_type ],
         }
 
-class Note( Chunk ):
+class Note( Page ):
     def __init__(self, nhdr):
- 
-        self.header = nhdr
         self.name = ''
         self.desc = ''
 
-        Chunk.__init__(self, self.header.prop, True, 
-                       offset=self.header.offset_start+calcsize(''.join(self.header.format)), 
-                       size=self.header.n_namesz+self.header.n_descz)
+        Page.__init__(self, nhdr,
+                      nhdr.offset_start+calcsize(''.join(nhdr.format)),
+                      nhdr.n_namesz+nhdr.n_descz)
 
     def load(self, offset=None, filemap=None):
-        Chunk.load(self, offset, filemap)
+        Page.load(self, offset, filemap)
 
         self.name = str(self.data[:self.header.n_namesz])
         self.desc = str(self.data[self.header.n_namesz:])
-
-        self.data = None
-
-    def chunks(self):
-        return [self, self.header]
 
 #######
 # EOF #

@@ -15,11 +15,11 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# Program
+""" ProgramHeader and Program classes """
 
 from elf.core.property import VALUE_FIXED, VALUE_BITWISE
 from elf.core.header import Header
-from elf.core.chunk import Chunk
+from elf.core.page import Page
 
 phdr_type = {
     'PT_NULL'              : 0,
@@ -119,15 +119,9 @@ class ProgramHeader( Header ):
     format_32 = [ 'i', 'I', 'I', 'I', 'i', 'i', 'i', 'I' ]
     format_64 = [ 'i', 'i', 'Q', 'Q', 'Q', 'q', 'q', 'Q' ]
 
-class Program( Chunk ):
+class Program( Page ):
     def __init__(self, phdr):
-        self.header = phdr
-
-        Chunk.__init__(self, prop=self.header.prop, load=True, offset=self.header.p_offset,
-                       size=self.header.p_filesz)
-
-    def chunks(self):
-        return [self, self.header]
+        Page.__init__(self, phdr, phdr.p_offset, phdr.p_filesz)
 
 #######
 # EOF #

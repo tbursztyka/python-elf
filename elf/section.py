@@ -15,11 +15,11 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# Section elements
+""" SectionHeader and Section classes """
 
 from elf.core.property import VALUE_FIXED, VALUE_BITWISE
 from elf.core.header import Header
-from elf.core.chunk import Chunk
+from elf.core.page import Page
 from elf.symbol import SymbolTableEntry
 from elf.relocation import RelocationEntry, RelocationAEntry
 from elf.dynamic import DynamicSectionEntry
@@ -207,9 +207,8 @@ class SectionHeader( Header ):
         'sh_flags' : [ VALUE_BITWISE, shdr_flags ],
         }
 
-class Section( Chunk ):
+class Section( Page ):
     def __init__(self, shdr):
-        self.header = shdr
         self.name = 'null'
 
         self.strtab = {}
@@ -218,8 +217,7 @@ class Section( Chunk ):
         self.dynamic = []
         self.note = []
 
-        Chunk.__init__(self, prop=self.header.prop, load=True, 
-                       offset=self.header.sh_offset, size=self.header.sh_size)
+        Page.__init__(self, shdr, shdr.sh_offset, shdr.sh_size)
 
     def load(self, offset=None, filemap=None):
         # Call specific loading func, depending on sh_type
@@ -238,7 +236,7 @@ class Section( Chunk ):
         elif self.header.sh_type == shdr_type['SHT_NOTE']:
             self.loadNote()
         else:
-            Chunk.load(self)
+            Page.load(self)
 
     def loadSymTab(self):
         off = self.offset_start
@@ -254,7 +252,7 @@ class Section( Chunk ):
 
         format = self.prop.endian+('s'*self.size)
 
-        Chunk.load(self)
+        Page.load(self)
         
         self.strtab = list(unpack_from(format, self.data))
         if self.strtab[len(self.strtab)-1] != '\0':
@@ -292,7 +290,7 @@ class Section( Chunk ):
             size = size - n_hdr.size - note.size
 
     def chunks(self):
-        c_lst = [self, self.header]
+        c_lst = Page.chunks(self)
         
         c_lst.extend(self.symtab)
         c_lst.extend(self.relocs)

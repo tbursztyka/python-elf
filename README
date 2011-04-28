@@ -21,12 +21,11 @@ E.g.: it cannot intepret DWARF2 specific sections.
 Limitations
 -----------
 
-- no writing capabilities...
+- no writing capabilities... coming soon
 - doet not yet interpret machine specific data, though necessary values interpreters 
   are already present.
 - No version part interpretation.
 - Only basic relocation interpretation
-- Not yet definitive architecture
 - Prone to error while binary owns anti-re tricks. (could be easily fixed, some case
   are already handled)
 
@@ -36,21 +35,19 @@ Design
 Everything in python-elf is thought and handled as a "chunk". An ELF file is a chunk
 made of multiple other chunks.
 
-Here is a quick overview on the design:
+Headers in ELF are chunks. Due to the fact that all section and program part possess a
+header, there is a class representing a chunk with a header: the page.
 
-  ----------> Chunk <---- Header <------------
- |     |                            |         |
- |     |                            |         |
- |    Elf-----------------------ElfHeader     |
- |                                            |
- |                                            |
- \----- Section-------------SectionHeader-----/
-        Program-------------ProgramHeader
-         ...                    ...
+Here is a quick overview on the basic design:
 
-Elf class is the ones who owns all other chunks (sections/programs...)
-Section owns Symbol, Relocation, Dynamic, Note...
+   --> Chunk <--
+  |             |
+  |             |
+Header - - - - Page
 
+Section, Program and Note classes are sub-classes of Page so they embed their respective
+headers. This simplify then the relationshid within this two chunk (e.g. a section and its 
+header).
 
 Using python-elf
 ----------------

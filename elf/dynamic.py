@@ -15,7 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# Dynamic elements
+""" DynamicSectionEntry class """
 
 from elf.core.property import VALUE_FIXED, VALUE_BITWISE
 from elf.core.header import Header
