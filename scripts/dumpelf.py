@@ -38,8 +38,11 @@ cannot_disassemble = False
 try:
     from distorm import Decode, Decode32Bits, Decode64Bits
 except:
-    cannot_disassemble = True
-    pass
+    try:
+        from distorm3 import Decode, Decode32Bits, Decode64Bits
+    except:
+        cannot_disassemble = True
+        pass
 
 if len(sys.argv) <= 1:
     print "dumpelf.py needs at least 1 argument."
@@ -59,7 +62,7 @@ option_list = [
 parser = OptionParser(option_list=option_list)
 
 parser.set_defaults(verbose=False, disp_programs=False, disp_sections=False, disassemble=False)
-    
+
 (options, args) = parser.parse_args()
 
 verbose = options.verbose
@@ -119,12 +122,12 @@ for sec in bin.sections:
                 sys.exit(1)
 
             disas_list = Decode(sec.header.sh_addr, str(sec.data), mode)
-        
+
             print 'Assembler:'
             for i in disas_list:
                 print "\t0x%08x (%02x) %-20s %s" % (i[0],  i[1],  i[3],  i[2])
             print '\n'
-        
+
         ndx += 1
         continue
 
@@ -145,7 +148,7 @@ for sec in bin.sections:
             printHeader(entry)
             print '\n'
             sym_ndx += 1
-    
+
     elif htype == shdr_type['SHT_DYNAMIC']:
         print '\n\tDynamic tables entries:'
         dyn_ndx = 0
@@ -154,7 +157,7 @@ for sec in bin.sections:
             printHeader(entry)
             print '\n'
             dyn_ndx += 1
-    
+
     elif htype == shdr_type['SHT_NOTE']:
         print '\n\tNote entrie(s):'
         note_ndx = 0
@@ -171,3 +174,4 @@ for sec in bin.sections:
 #######
 # EOF #
 #######
+
