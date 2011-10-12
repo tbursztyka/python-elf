@@ -87,10 +87,10 @@ for key,value in syminfo_version.items(): syminfo_version[value] = key
 class SymbolTableEntry( Header ):
     descriptions_32 = [ 'st_name', 'st_value', 'st_size', 'st_info',
                         'st_other', 'st_shndx' ]
-    
+
     descriptions_64 = [ 'st_name', 'st_info', 'st_other', 'st_shndx',
                         'st_value', 'st_size' ]
-    
+
     format_32 = [ 'i', 'I', 'i', 'B', 'B', 'H' ]
     format_64 = [ 'i', 'B', 'B', 'H', 'Q', 'q' ]
 
@@ -101,7 +101,7 @@ class SymbolTableEntry( Header ):
     hr_values = {
         'st_type'       : [ VALUE_FIXED, symtab_type ],
         'st_bind'       : [ VALUE_FIXED, symtab_bind ],
-        'st_visibility' : [ VALUE_FIXED, symtab_visibility ], 
+        'st_visibility' : [ VALUE_FIXED, symtab_visibility ],
         }
 
     def __init__(self, prop=None, offset=None):
@@ -117,7 +117,7 @@ class SymbolTableEntry( Header ):
 
     def get_st_visibility(self):
         return (self.st_other & 0x03)
-    
+
     def set_st_bind(self, value):
         self._set_st_info(value, self.st_type)
 
@@ -143,3 +143,4 @@ class SymbolInfo( Header ):
 #######
 # EOF #
 #######
+

@@ -84,7 +84,7 @@ class Chunk( object ):
                 return
             else:
                 offset = self.offset_start
-        
+
         if self.size <= 0:
             return
 
@@ -151,3 +151,4 @@ class Chunk( object ):
 #######
 # EOF #
 #######
+

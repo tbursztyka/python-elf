@@ -22,7 +22,7 @@ from elf.core.header import Header
 
 class RelocationEntry( Header ):
     descriptions = [ 'r_offset', 'r_info' ]
-    
+
     format_32 = [ 'I', 'i' ]
     format_64 = [ 'Q', 'q' ]
 
@@ -50,10 +50,11 @@ class RelocationEntry( Header ):
 
 class RelocationAEntry( RelocationEntry ):
     descriptions = [ 'r_offset', 'r_info', 'r_addend' ]
-    
+
     format_32 = [ 'I', 'i', 'i' ]
     format_64 = [ 'Q', 'q', 'q' ]
 
 #######
 # EOF #
 #######
+

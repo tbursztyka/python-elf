@@ -33,7 +33,7 @@ def getElementAsString(hdr, fmt, elt, max_len):
 
     value = hdr.__getattr__(elt)
 
-    disp_str = '\t%s%s= %s' % (elt, ' '*(max_len-len(elt)+1), formats[fmt])        
+    disp_str = '\t%s%s= %s' % (elt, ' '*(max_len-len(elt)+1), formats[fmt])
     disp_str = disp_str % (value)
 
     if hdr.hr_values.has_key(elt):
@@ -72,7 +72,7 @@ def printHeader(hdr):
     for elt in hdr.descriptions:
         if len(elt) > max_len:
             max_len = len(elt)
-    
+
     for elt in hdr.descriptions:
         fmt = hdr.format[hdr.descriptions.index(elt)]
         fmt = fmt[len(fmt)-1]
@@ -90,4 +90,8 @@ def printHeader(hdr):
             fmt = fmt[len(fmt)-1]
 
             print getElementAsString(hdr, fmt, elt, max_len)
+
+#######
+# EOF #
+#######
 

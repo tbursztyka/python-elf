@@ -105,14 +105,14 @@ phdr_flags = {
 for key,value in phdr_flags.items(): phdr_flags[value] = key
 
 class ProgramHeader( Header ):
-    descriptions_32 = [ 'p_type', 'p_offset', 'p_vaddr', 'p_paddr', 
+    descriptions_32 = [ 'p_type', 'p_offset', 'p_vaddr', 'p_paddr',
                         'p_filesz', 'p_memsz', 'p_flags', 'p_align' ]
 
-    descriptions_64 = [ 'p_type', 'p_flags', 'p_offset', 'p_vaddr', 
+    descriptions_64 = [ 'p_type', 'p_flags', 'p_offset', 'p_vaddr',
                      'p_paddr', 'p_filesz', 'p_memsz', 'p_align' ]
-    
+
     hr_values = {
-        'p_type'  : [ VALUE_FIXED, phdr_type ], 
+        'p_type'  : [ VALUE_FIXED, phdr_type ],
         'p_flags' : [ VALUE_BITWISE, phdr_flags ],
         }
 
@@ -126,3 +126,4 @@ class Program( Page ):
 #######
 # EOF #
 #######
+

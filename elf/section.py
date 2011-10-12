@@ -195,7 +195,7 @@ shdr_flags_ia64 = {
     }
 
 class SectionHeader( Header ):
-    descriptions = [ 'sh_name', 'sh_type', 'sh_flags', 'sh_addr', 
+    descriptions = [ 'sh_name', 'sh_type', 'sh_flags', 'sh_addr',
                      'sh_offset', 'sh_size', 'sh_link', 'sh_info',
                      'sh_addralign', 'sh_entsize' ]
 
@@ -242,9 +242,9 @@ class Section( Page ):
         off = self.offset_start
         for ent_count in range(0, self.size/self.header.sh_entsize):
             symtab_entry = SymbolTableEntry(self.prop, off)
-            
+
             self.symtab.append(symtab_entry)
-            off += self.header.sh_entsize 
+            off += self.header.sh_entsize
 
     def loadStrTab(self):
         if self.size <= 0:
@@ -253,14 +253,14 @@ class Section( Page ):
         format = self.prop.endian+('s'*self.size)
 
         Page.load(self)
-        
+
         self.strtab = list(unpack_from(format, self.data))
         if self.strtab[len(self.strtab)-1] != '\0':
             self.strtab.append('\0')
 
     def loadRelocs(self, addends=False):
         off = self.offset_start
-        
+
         for ent_count in range(0, self.size/self.header.sh_entsize):
             if addends:
                 reloc = RelocationEntry(self.prop, off)
@@ -274,9 +274,9 @@ class Section( Page ):
         off = self.offset_start
         for ent_count in range(0, self.size/self.header.sh_entsize):
             dynamic_entry = DynamicSectionEntry(self.prop, off)
-            
+
             self.dynamic.append(dynamic_entry)
-            off += self.header.sh_entsize 
+            off += self.header.sh_entsize
 
     def loadNote(self):
         off = self.header.sh_offset
@@ -291,11 +291,11 @@ class Section( Page ):
 
     def chunks(self):
         c_lst = Page.chunks(self)
-        
+
         c_lst.extend(self.symtab)
         c_lst.extend(self.relocs)
         c_lst.extend(self.dynamic)
-        
+
         for c in self.note:
             c_lst.extend(c.chunks())
 
@@ -304,3 +304,4 @@ class Section( Page ):
 #######
 # EOF #
 #######
+

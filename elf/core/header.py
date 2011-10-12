@@ -41,12 +41,12 @@ class Header( Chunk ):
     cf_format = None
     # Human Readable values for certain field
     hr_values = None
-    
+
     def __init__(self, prop=None, offset=None):
         """ Constructor """
 
         self.fields = None
-        
+
         if not self.format:
             try:
                 if prop.arch == ARCH_32:
@@ -57,7 +57,7 @@ class Header( Chunk ):
                     self.format = []
             except AttributeError:
                 self.format = []
-            
+
         if not self.descriptions:
             try:
                 if prop.arch == ARCH_32:
@@ -100,13 +100,13 @@ class Header( Chunk ):
 
         Chunk.__init__(self, prop, True, offset,
                        calcsize(''.join(self.format)))
-    
+
     def __getattr__(self, name):
         """ Attribute getter rewrite """
 
         if self.descriptions != None and name in self.descriptions:
             return self.fields[self.descriptions.index(name)]
-        
+
         if self.cf_descriptions != None and name in self.cf_descriptions:
             return getattr(self, "get_"+name)()
 
@@ -114,7 +114,7 @@ class Header( Chunk ):
             return self.__dict__[name]
         except KeyError:
             raise AttributeError, name
-    
+
     def __setattr__(self, name, value):
         """ Attribute setter rewrite """
 
@@ -126,23 +126,23 @@ class Header( Chunk ):
             getattr(self,  "set_"+name)(value)
         else:
             Chunk.__setattr__(self, name, value)
-    
+
     def load(self, offset=None, filemap=None):
         """ Loads header fields according to descriptions/format """
 
         Chunk.load(self, offset, filemap)
-        
-        self.fields = list(unpack_from(''.join([self.prop.endian]+self.format), 
+
+        self.fields = list(unpack_from(''.join([self.prop.endian]+self.format),
                                        self.data))
 
     def todata(self):
         """ Transcode fields into a byte string """
 
-        data = ''  
+        data = ''
         for idx in range(0, len(self.format)):
             data += pack(''.join([self.prop.endian]+self.format[idx]),
                          self.fields[idx])
-        
+
         return data
 
     def write(self, filemap=None):
@@ -155,3 +155,4 @@ class Header( Chunk ):
 #######
 # EOF #
 #######
+

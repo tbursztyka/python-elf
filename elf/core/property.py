@@ -36,7 +36,7 @@ class Property:
         self.mode = mode
         if self.mode == None:
             self.mode = ACCESS_READ
-        
+
         self.backup = backup
         self.filename = filename
         self.size_src = size_src
@@ -48,16 +48,15 @@ class Property:
         self.map_dst = None
         self.arch = None
         self.endian = None
-        
-        
+
         native = pack('@h', 1)
         little = pack('<h', 1)
-        
+
         if native == little:
             self.endian = LITTLE_ENDIAN
         else:
             self.endian = BIG_ENDIAN
-        
+
         if calcsize("P") == 8:
             self.arch = ARCH_64
         else:
@@ -66,3 +65,4 @@ class Property:
 #######
 # EOF #
 #######
+

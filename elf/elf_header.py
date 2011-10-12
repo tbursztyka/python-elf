@@ -174,7 +174,7 @@ for key,value in ehdr_encoding.items(): ehdr_encoding[value] = key
 
 
 class Eident( Header ):
-    descriptions = [ 'ei_magic', 'ei_class', 'ei_data', 'ei_version', 
+    descriptions = [ 'ei_magic', 'ei_class', 'ei_data', 'ei_version',
                      'ei_osabi', 'ei_abiversion', 'ei_pad', 'ei_nident' ]
 
     hr_values = {
@@ -204,7 +204,7 @@ class Eident( Header ):
 
 class ElfHeader( Header ):
     descriptions = [ 'e_type', 'e_machine', 'e_version', 'e_entry',
-                     'e_phoff', 'e_shoff', 'e_flags', 'e_ehsize', 
+                     'e_phoff', 'e_shoff', 'e_flags', 'e_ehsize',
                      'e_phentsize', 'e_phnum', 'e_shentsize',
                      'e_shnum', 'e_shstrndx' ]
 
@@ -214,17 +214,17 @@ class ElfHeader( Header ):
         'e_version' : [ VALUE_FIXED, ehdr_version ],
         }
 
-    format_32 = [ 'h', 'h', 'i', 'I', 'I', 'I', 'i', 
+    format_32 = [ 'h', 'h', 'i', 'I', 'I', 'I', 'i',
                   'h', 'h', 'h', 'h', 'h', 'h' ]
-    format_64 = [ 'h', 'h', 'i', 'Q', 'Q', 'Q', 'i', 
+    format_64 = [ 'h', 'h', 'i', 'Q', 'Q', 'Q', 'i',
                   'h', 'h', 'h', 'h', 'h', 'h' ]
-    
+
     def __init__(self, e_ident, offset=None):
         self.e_ident = e_ident
 
         if offset == None:
             offset = calcsize(''.join(Eident.format))
-        
+
         Header.__init__(self, e_ident.prop, offset)
 
     def chuncks(self):
@@ -233,3 +233,4 @@ class ElfHeader( Header ):
 #######
 # EOF #
 #######
+
