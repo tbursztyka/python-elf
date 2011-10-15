@@ -22,7 +22,7 @@ from elf.elf_header import Eident, ElfHeader
 from elf.section import SectionHeader, Section, shdr_type
 from elf.symbol import symtab_type
 from elf.program import ProgramHeader, Program
-from elf.utils import getNameFromStrTab
+from elf.utils import getNameFromStrTab, compareChunks, orderChunks
 from os.path import getsize
 
 """ Elf class """
@@ -60,6 +60,11 @@ class Elf( Chunk ):
         self.load_sections()
         self.load_sections_names()
         self.load_symbols_names()
+
+        # Now, creating the chunks hierarchy
+        chunks = self.chunks()
+        chunks_sorted = sorted(chunks, cmp=compareChunks)
+        orderChunks(chunks_sorted)
 
     def load_binary(self, filename=None, offset=None, filemap=None):
         """ Loads the ELF file into a memory mapped file """
