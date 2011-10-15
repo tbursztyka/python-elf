@@ -59,7 +59,9 @@ def orderChunks(lst, n_p = 0, n_c = 1):
 
             n_c = orderChunks(lst, n_c, n_c+1)
         else:
-            return n_c
+            break
+
+    return n_c
 
 #######
 # EOF #
