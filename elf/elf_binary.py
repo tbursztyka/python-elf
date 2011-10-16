@@ -117,10 +117,10 @@ class Elf( Chunk ):
         for ndx in range(0, num):
             shdr = SectionHeader(self.prop, off)
 
-            sec = Section(shdr)
-            off += shdr.size
+            section = Section(shdr)
+            self.sections.append(section)
 
-            self.sections.append(sec)
+            off += shdr.size
 
     def load_programs(self, phdr_off=None, num=None, ent_size=None):
         """ Loads ELF programs """
@@ -141,10 +141,10 @@ class Elf( Chunk ):
         for ndx in range(0, num):
             phdr = ProgramHeader(self.prop, off)
 
-            prg = Program(phdr)
-            off += phdr.size
+            program = Program(phdr)
+            self.programs.append(program)
 
-            self.programs.append(prg)
+            off += phdr.size
 
     def load_sections_names(self):
         """ Loads sections names from shstrtab if possible """
