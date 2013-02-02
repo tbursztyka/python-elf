@@ -44,7 +44,6 @@ class Chunk( object ):
         self.prop = prop
         self.offset_start = offset
         self.offset_end = offset + size
-        self.size = size
         self.data = None
         self.modified = False
         # unique reference
@@ -62,19 +61,31 @@ class Chunk( object ):
 
         self.finalize()
 
+    def __getattr__(self, name):
+        if name == 'size':
+            return self.offset_end - self.offset_start
+
+        try:
+            return self.__dict__[name]
+        except KeyError:
+            raise AttributeError, name
+
     def __setattr__(self, name, value):
         """ Attribute setter rewrite """
 
-        self.__dict__[name] = value
-
         if name == 'data' and value is not None:
             self.modified = True
-            # Redefine the size 
-            self.size = len(value)
-            self.offset_end = self.offset_start + self.size
+            self.offset_end = self.offset_start + len(value)
+
+        elif name == 'size' and value is not None:
+            self.modified = True
+            self.offset_end = self.offset_start + value
+            return
 
         elif name.find('offset') > -1 and value is not None:
             self.modified = True
+
+        self.__dict__[name] = value
 
     def load(self, offset=None, filemap=None):
         """ Loads chunk content into data attribute from filemap """

@@ -110,10 +110,7 @@ class Header( Chunk ):
         if self.cf_descriptions != None and name in self.cf_descriptions:
             return getattr(self, "get_"+name)()
 
-        try:
-            return self.__dict__[name]
-        except KeyError:
-            raise AttributeError, name
+        return Chunk.__getattr__(self, name)
 
     def __setattr__(self, name, value):
         """ Attribute setter rewrite """
