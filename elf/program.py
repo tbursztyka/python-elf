@@ -133,6 +133,8 @@ class Program( Page ):
     def __init__(self, phdr):
         Page.__init__(self, phdr, phdr.p_offset, phdr.p_filesz)
 
+        self.protected = True
+
 #######
 # EOF #
 #######

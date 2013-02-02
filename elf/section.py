@@ -308,6 +308,19 @@ class Section( Page ):
 
         return c_lst
 
+    def remove(self, force = False, forward = True):
+        if forward == True:
+            for s in self.symtab:
+                s.remove(force)
+            for r in self.relocs:
+                r.remove(force)
+            for d in self.dynamic:
+                d.remove(force)
+            for n in self.note:
+                n.remove(force, forward)
+
+        return Page.remove(self, force, forward)
+
 #######
 # EOF #
 #######

@@ -40,6 +40,14 @@ class Page( Chunk ):
 
         return [self.header, self]
 
+    def remove(self, force = False, forward = True):
+        """ Remove the page and its header according to forward """
+
+        ret = Chunk.remove(self, force)
+        if ret == 0 and forward == True:
+            ret = self.header.remove(force)
+        return ret
+
 #######
 # EOF #
 #######

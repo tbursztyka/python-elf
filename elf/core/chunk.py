@@ -51,6 +51,9 @@ class Chunk( object ):
         # Mutltiple includes, see accessors below
         self.includes = []
 
+        self.protected = False
+        self.suppressed = False
+
         self.counter = ChunkCounter()
 
         if load:
@@ -113,7 +116,11 @@ class Chunk( object ):
     def remove(self, impact = False):
         """ Remove the chunk """
 
-        pass
+        if self.protected == True and force == False:
+            return -1
+
+        self.suppressed = True
+        return 0
 
     def affect(self, from_chunk):
         """ Apply changes from relevant chunk """
