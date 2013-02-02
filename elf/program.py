@@ -119,6 +119,16 @@ class ProgramHeader( Header ):
     format_32 = [ 'i', 'I', 'I', 'I', 'i', 'i', 'i', 'I' ]
     format_64 = [ 'i', 'i', 'Q', 'Q', 'Q', 'q', 'q', 'Q' ]
 
+    def affect(self, program):
+        try:
+            self.p_vaddr -= self.p_offset - program.offset_start
+            self.p_paddr = self.p_vaddr
+
+            self.p_offset = program.offset_start
+            self.p_filesz = program.size
+        except Exception:
+            pass
+
 class Program( Page ):
     def __init__(self, phdr):
         Page.__init__(self, phdr, phdr.p_offset, phdr.p_filesz)

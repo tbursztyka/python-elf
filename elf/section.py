@@ -207,6 +207,13 @@ class SectionHeader( Header ):
         'sh_flags' : [ VALUE_BITWISE, shdr_flags ],
         }
 
+    def affect(self, section):
+        try:
+            self.sh_offset = section.offset_start
+            self.sh_size = section.size
+        except Exception:
+            pass
+
 class Section( Page ):
     def __init__(self, shdr):
         self.name = 'null'
