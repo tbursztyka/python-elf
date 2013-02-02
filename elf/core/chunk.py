@@ -118,12 +118,16 @@ class Chunk( object ):
     def add_include(self, include):
         """ add an include to the chunk, this chunk becomes the parent """
 
-        if include.offset_start == 0 and include.offset_end == 0:
-            return
-
         if include not in self.includes:
             self.includes.append(include)
             include.inside = self
+
+    def del_include(self, include):
+        """ delete an include from the chunk """
+
+        if include in self.includes:
+            idx = self.includes.index(include)
+            del self.includes[idx]
 
     def chunks(self):
         """ Returns the chunks it possesses """
