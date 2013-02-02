@@ -142,11 +142,13 @@ class Chunk( object ):
     def write(self, filemap):
         """ Write the chunk and its includes """
 
+        if self.size <= 0 or self.data == None:
+            return 0
+
         filemap.seek(self.offset_start)
 
         if len(self.includes) == 0:
             filemap.write(self.data)
-
             return self.size
 
         cur_data = 0
@@ -154,17 +156,21 @@ class Chunk( object ):
 
         for inc in self.includes:
             if cur_offset < inc.offset_start:
-                filemap.write(self.data[cur_data:inc.offset_start - cur_offset])
+                new_cur_data = cur_data + inc.offset_start - cur_offset
+                filemap.write(self.data[cur_data:new_cur_data])
 
-                cur_data += inc.offset_start - cur_offset
+                cur_data = new_cur_data
                 cur_offset = inc.offset_start
 
-            w_size = inc._write(filemap)
+            w_size = inc.write(filemap)
 
             cur_data += w_size
             cur_offset += w_size
 
-        return cur_data
+        if cur_data < self.size:
+            filemap.write(self.data[cur_data:])
+
+        return self.size
 
 #######
 # EOF #

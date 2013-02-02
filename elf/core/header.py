@@ -137,7 +137,7 @@ class Header( Chunk ):
 
         data = ''
         for idx in range(0, len(self.format)):
-            data += pack(''.join([self.prop.endian]+self.format[idx]),
+            data += pack(''.join([self.prop.endian+self.format[idx]]),
                          self.fields[idx])
 
         return data
@@ -145,9 +145,8 @@ class Header( Chunk ):
     def write(self, filemap=None):
         """ Writes header fields """
 
-        self.data = self.toData()
-
-        Chunk.write(self, filemap)
+        self.data = self.todata()
+        return Chunk.write(self, filemap)
 
 #######
 # EOF #

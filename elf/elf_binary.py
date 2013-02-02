@@ -35,7 +35,7 @@ class Elf( Chunk ):
         self.access = access
 
         if self.access == 'w':
-            mode = ACCESS_READ | ACCESS_WRITE
+            mode = ACCESS_WRITE
         elif self.access == 'r':
             mode = ACCESS_READ
         else:
@@ -217,8 +217,8 @@ class Elf( Chunk ):
         """ Writes the current ELF map into a file """
 
         if self.prop.backup:
-            f_dst = file(self.prop.filename+'_mod', 'w+')
-            f_dst.write('\n'*PAGESIZE)
+            f_dst = file(self.prop.filename+'_mod', 'wb')
+            f_dst.write('\0'*PAGESIZE)
             f_dst.close()
             self.prop.file_dst = file(self.prop.filename+'_mod', 'r+')
             self.prop.map_dst = mmap(self.prop.file_dst.fileno(),
@@ -226,12 +226,14 @@ class Elf( Chunk ):
 
             self.prop.map_dst.resize(self.size)
 
-        Chunk.write(self, self.prop.map_dst)
+        ret_size = Chunk.write(self, self.prop.map_dst)
 
         self.prop.map_dst.close()
         self.prop.map_dst = None
         self.prop.file_dst.close()
         self.prop.file_dst = None
+
+        return ret_size
 
     def finalize(self):
         """ Close map before deleting the object """
