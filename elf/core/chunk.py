@@ -115,6 +115,11 @@ class Chunk( object ):
 
         pass
 
+    def affect(self, from_chunk):
+        """ Apply changes from relevant chunk """
+
+        pass
+
     def add_include(self, include):
         """ add an include to the chunk, this chunk becomes the parent """
 

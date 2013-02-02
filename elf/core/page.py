@@ -29,6 +29,12 @@ class Page( Chunk ):
 
         Chunk.__init__(self, self.header.prop, True, offset, size)
 
+    def __setattr__(self, name, value):
+        Chunk.__setattr__(self, name, value)
+
+        if 'header' in self.__dict__.keys():
+            self.header.affect(self)
+
     def chunks(self):
         """ Returns the chunks it possesses """
 
