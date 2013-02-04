@@ -187,6 +187,7 @@ class Eident( Header ):
     format = [ '4s', 'B', 'B', 'B', 'B', 'B', '6B', 'B' ]
 
     def getArch(self):
+        print calcsize(''.join(self.format))
         if self.ei_class == ehdr_class['ELFCLASS32']:
             return ARCH_32
         elif self.ei_class == ehdr_class['ELFCLASS64']:
@@ -227,7 +228,7 @@ class ElfHeader( Header ):
 
         Header.__init__(self, e_ident.prop, offset)
 
-    def chuncks(self):
+    def chunks(self):
         return [self.e_ident, self]
 
 #######

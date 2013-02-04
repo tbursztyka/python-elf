@@ -45,7 +45,7 @@ class Header( Chunk ):
     def __init__(self, prop=None, offset=None):
         """ Constructor """
 
-        self.fields = None
+        self.fields = []
 
         if not self.format:
             try:
@@ -129,16 +129,32 @@ class Header( Chunk ):
 
         Chunk.load(self, offset, filemap)
 
-        self.fields = list(unpack_from(''.join([self.prop.endian]+self.format),
-                                       self.data))
+        fields = list(unpack_from(''.join([self.prop.endian]+self.format),
+                                  self.data))
+        idx = 0
+        for fmt in self.format:
+            if fmt[len(fmt)-1] not in [ 's', 'p' ] and (
+                        fmt[:len(fmt)-1].isdigit() == True):
+                v = idx
+                self.fields += [()]
+                for n in range (0, int(fmt[:len(fmt)-1])):
+                    self.fields[v] += (fields[idx],)
+                    idx += 1
+            else:
+                self.fields += [fields[idx]]
+                idx += 1
 
     def todata(self):
         """ Transcode fields into a byte string """
 
         data = ''
         for idx in range(0, len(self.format)):
-            data += pack(''.join([self.prop.endian+self.format[idx]]),
-                         self.fields[idx])
+            if isinstance(self.fields[idx], tuple):
+                data += pack(''.join([self.prop.endian+self.format[idx]]),
+                             *self.fields[idx])
+            else:
+                data += pack(''.join(self.prop.endian+self.format[idx]),
+                             self.fields[idx])
 
         return data
 
