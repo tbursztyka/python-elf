@@ -33,8 +33,13 @@ def getElementAsString(hdr, fmt, elt, max_len):
 
     value = hdr.__getattr__(elt)
 
-    disp_str = '\t%s%s= %s' % (elt, ' '*(max_len-len(elt)+1), formats[fmt])
-    disp_str = disp_str % (value)
+    disp_str = '\t%s%s= ' % (elt, ' '*(max_len-len(elt)+1))
+    if isinstance(value, tuple):
+        disp_str += '%s' % '%s'
+        disp_str = disp_str % str(value)
+    else:
+        disp_str += '%s' % formats[fmt]
+        disp_str = disp_str % (value)
 
     if hdr.hr_values.has_key(elt):
         k_elt = hdr.hr_values.get(elt)
