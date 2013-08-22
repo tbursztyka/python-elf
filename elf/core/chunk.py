@@ -37,9 +37,12 @@ class ChunkCounter( object ):
 
 class Chunk( object ):
     """ Basic Chunk class: all parts of ELF format are assumed as chunks """
+    issuer = None
 
-    def __init__(self, prop=None, load=False, offset=None, size=0):
+    def __init__(self, prop=None, load=False, offset=None, size=0, issuer=None):
         """ Constructor """
+
+        self.issuer = issuer
 
         self.prop = prop
         self.offset_start = offset
@@ -90,6 +93,9 @@ class Chunk( object ):
 
         self.__dict__[name] = value
 
+        if self.issuer != None:
+            self.issuer.affect(self)
+
     def load(self, offset=None, filemap=None):
         """ Loads chunk content into data attribute from filemap """
 
@@ -113,11 +119,14 @@ class Chunk( object ):
         f_m.seek(self.offset_start)
         self.data = f_m.read(self.size)
 
-    def remove(self, impact = False):
+    def remove(self, force = False):
         """ Remove the chunk """
 
         if self.protected == True and force == False:
             return -1
+
+        if self.issuer != None:
+            self.issuer.affect(self)
 
         self.suppressed = True
         return 0

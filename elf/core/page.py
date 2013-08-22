@@ -27,13 +27,7 @@ class Page( Chunk ):
 
         self.header = header
 
-        Chunk.__init__(self, self.header.prop, True, offset, size)
-
-    def __setattr__(self, name, value):
-        Chunk.__setattr__(self, name, value)
-
-        if 'header' in self.__dict__.keys():
-            self.header.affect(self)
+        Chunk.__init__(self, self.header.prop, True, offset, size, header)
 
     def chunks(self):
         """ Returns the chunks it possesses """
@@ -43,10 +37,10 @@ class Page( Chunk ):
     def remove(self, force = False, forward = True):
         """ Remove the page and its header according to forward """
 
-        ret = Chunk.remove(self, force)
-        if ret == 0 and forward == True:
+        if forward == True:
             ret = self.header.remove(force)
-        return ret
+
+        return Chunk.remove(self, force)
 
 #######
 # EOF #
