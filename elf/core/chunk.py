@@ -146,9 +146,13 @@ class Chunk( object ):
     def del_include(self, include):
         """ delete an include from the chunk """
 
-        if include in self.includes:
-            idx = self.includes.index(include)
-            del self.includes[idx]
+        if include not in self.includes:
+            return
+
+        idx = self.includes.index(include)
+        del self.includes[idx]
+
+        include.inside = None
 
     def chunks(self):
         """ Returns the chunks it possesses """
