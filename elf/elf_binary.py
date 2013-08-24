@@ -193,6 +193,51 @@ class Elf( Chunk ):
                     if s_entry.st_type == symtab_type['STT_SECTION']:
                         s_entry.name = self.sections[s_entry.st_shndx].name
 
+    def recompute(self, branch = None, move = 0, end = 0):
+        if branch == None:
+            branch = self
+        else:
+            if branch.suppressed == True and (
+                    branch.inside == self or branch.inside.suppressed == True):
+                if len(branch.includes) > 0:
+                    move -= branch.includes[0].offset_start - branch.offset_start
+                else:
+                    move -= branch.size
+            else:
+                if branch.inside == self and branch.offset_start + move > end:
+                    move = -(branch.offset_start - end)
+
+                if isinstance(branch, Program) == False:
+                    branch.offset_start += move
+                    branch.offset_end += move
+                else:
+                    move = 0
+
+        includes = []
+        includes.extend(branch.includes)
+
+        for sub_b in includes:
+            (move, end, b_incs) = self.recompute(sub_b, move, end)
+
+            if len(b_incs) > 0:
+                idx = branch.includes.index(sub_b) + 1
+                for b_inc in b_incs:
+                    branch.includes.insert(idx, b_inc)
+                    idx += 1
+
+            if sub_b.suppressed == True:
+                branch.del_include(sub_b)
+
+        ret_includes = []
+        if branch.suppressed == True:
+            ret_includes = branch.includes
+        elif branch != self and end < branch.offset_end:
+            end = branch.offset_end
+        elif branch == self:
+            branch.offset_end = end
+
+        return (move, end, ret_includes)
+
     def count(self):
         """ Returns the current count of chunks this file is made of """
 
