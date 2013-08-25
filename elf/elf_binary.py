@@ -274,15 +274,17 @@ class Elf( Chunk ):
     def write(self):
         """ Writes the current ELF map into a file """
 
+        filename = self.prop.filename
         if self.prop.backup:
-            f_dst = file(self.prop.filename+'_mod', 'wb')
-            f_dst.write('\0'*PAGESIZE)
-            f_dst.close()
-            self.prop.file_dst = file(self.prop.filename+'_mod', 'r+')
-            self.prop.map_dst = mmap(self.prop.file_dst.fileno(),
-                                     0, access=self.prop.mode)
+            filename = self.prop.filename+'_mod'
 
-            self.prop.map_dst.resize(self.size)
+        f_dst = file(filename, 'wb')
+        f_dst.write('\0'*PAGESIZE)
+        f_dst.close()
+        self.prop.file_dst = file(filename, 'r+')
+        self.prop.map_dst = mmap(self.prop.file_dst.fileno(),
+                                 0, access=self.prop.mode)
+        self.prop.map_dst.resize(self.size)
 
         ret_size = Chunk.write(self, self.prop.map_dst)
 
