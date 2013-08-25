@@ -54,9 +54,7 @@ def orderChunks(lst, n_p = 0, n_c = 1):
         p = lst[n_p]
         c = lst[n_c]
         if c.offset_start <= p.offset_end and c.offset_end <= p.offset_end:
-            #print "Add %d into %d" % (n_c, n_p)
             p.add_include(c)
-
             n_c = orderChunks(lst, n_c, n_c+1)
         else:
             break
