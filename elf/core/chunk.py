@@ -56,6 +56,7 @@ class Chunk( object ):
 
         self.protected = False
         self.suppressed = False
+        self.inserted = False
 
         self.counter = ChunkCounter()
 

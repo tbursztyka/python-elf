@@ -193,6 +193,15 @@ class Elf( Chunk ):
                     if s_entry.st_type == symtab_type['STT_SECTION']:
                         s_entry.name = self.sections[s_entry.st_shndx].name
 
+    def insert(self, chunk):
+        chunks = self.chunks()
+
+        chunk.inserted = True
+        chunks.append(chunk)
+
+        chunks_sorted = sorted(chunks, cmp=compareChunks)
+        orderChunks(chunks_sorted)
+
     def recompute(self, branch = None, move = 0, end = 0):
         if branch == None:
             branch = self
@@ -212,6 +221,10 @@ class Elf( Chunk ):
                     branch.offset_end += move
                 else:
                     move = 0
+
+        if branch.inserted == True:
+            move += branch.size
+            branch.inserted = False
 
         includes = []
         includes.extend(branch.includes)
