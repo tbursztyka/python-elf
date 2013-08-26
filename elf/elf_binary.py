@@ -194,6 +194,8 @@ class Elf( Chunk ):
                         s_entry.name = self.sections[s_entry.st_shndx].name
 
     def insert(self, chunk):
+        """ Insert a new chunk """
+
         chunks = self.chunks()
 
         chunk.inserted = True
@@ -203,6 +205,8 @@ class Elf( Chunk ):
         orderChunks(chunks_sorted)
 
     def recompute(self, branch = None, move = 0, end = 0):
+        """ Recompute all chunck offsets and ordering after changes """
+
         if branch == None:
             branch = self
         else:

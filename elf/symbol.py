@@ -15,7 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# Symbol elements
+""" SymbolTableEntry and SymbolInfo classes """
 
 from elf.core.property import ARCH_32, ARCH_64, VALUE_FIXED, VALUE_BITWISE
 from elf.core.header import Header

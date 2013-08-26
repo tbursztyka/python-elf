@@ -227,6 +227,8 @@ class Section( Page ):
         Page.__init__(self, shdr, shdr.sh_offset, shdr.sh_size)
 
     def load(self, offset=None, filemap=None):
+        """ Load proper elements depending on section's type """
+
         # Call specific loading func, depending on sh_type
         if self.header.sh_type == shdr_type['SHT_SYMTAB']:
             self.loadSymTab()
@@ -246,6 +248,8 @@ class Section( Page ):
             Page.load(self)
 
     def loadSymTab(self):
+        """ Load a symbol table """
+
         off = self.offset_start
         for ent_count in range(0, self.size/self.header.sh_entsize):
             symtab_entry = SymbolTableEntry(self.prop, off)
@@ -254,6 +258,8 @@ class Section( Page ):
             off += self.header.sh_entsize
 
     def loadStrTab(self):
+        """ Load a string table """
+
         if self.size <= 0:
             return
 
@@ -266,6 +272,8 @@ class Section( Page ):
             self.strtab.append('\0')
 
     def loadRelocs(self, addends=False):
+        """ Load relocation entries """
+
         off = self.offset_start
 
         for ent_count in range(0, self.size/self.header.sh_entsize):
@@ -278,6 +286,8 @@ class Section( Page ):
             off += self.header.sh_entsize
 
     def loadDynamic(self):
+        """ Load dynamic section entries """
+
         off = self.offset_start
         for ent_count in range(0, self.size/self.header.sh_entsize):
             dynamic_entry = DynamicSectionEntry(self.prop, off)
@@ -286,6 +296,8 @@ class Section( Page ):
             off += self.header.sh_entsize
 
     def loadNote(self):
+        """ Load notes """
+
         off = self.header.sh_offset
         size = self.header.sh_size
         while size > 0:

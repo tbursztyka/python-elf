@@ -15,7 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# Elf Header variables and classes
+""" Eident and ElfHeader classes """
 
 from elf.core.property import ARCH_32, ARCH_64, LITTLE_ENDIAN, BIG_ENDIAN, VALUE_FIXED, VALUE_BITWISE
 from elf.core.header import Header

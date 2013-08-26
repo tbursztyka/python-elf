@@ -15,7 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# Human readable descriptions 
+""" Human readable descriptions of all identifiers """
 
 desc_ehdr_class = {
     'ELFCLASSNONE' : 'Invalid class',
