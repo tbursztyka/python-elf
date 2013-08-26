@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-  Copyright (C) 2008-2011  See AUTHORS
+  Copyright (C) 2008-2013  Tomasz Bursztyka
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -93,16 +93,35 @@ print '\n'
 if not disp_programs and not disp_sections and not verbose and not disassemble:
     sys.exit(0)
 
+mode = None
+if disassemble:
+    if bin.header.e_machine == ehdr_machine['EM_X86_64']:
+        mode = Decode64Bits
+    elif bin.header.e_machine == ehdr_machine['EM_386']:
+        mode = Decode32Bits
+    else:
+        print "Cannot disassemble this binary file, its e_machine is not handled"
+        sys.exit(1)
+
 if disp_programs or verbose:
     ndx = 0
     for prg in bin.programs:
+        if disassemble:
+            disas_list = Decode(prg.header.p_vaddr, str(prg.data), mode)
+            print 'Program Header #%d' % (ndx)
+
+            print 'Assembler:'
+            for i in disas_list:
+                print "\t0x%08x (%02x) %-20s %s" % (i[0], i[1], i[3], i[2])
+            print '\n'
+
         print 'Program Header #%d' % (ndx)
         printHeader(prg.header)
         ndx += 1
 
         print '\n'
 
-if not disp_sections and not verbose and not disassemble:
+if not disp_sections and not verbose:
     sys.exit(0)
 
 ndx = 0
@@ -110,26 +129,13 @@ for sec in bin.sections:
     if disassemble:
         if sec.header.sh_type == shdr_type['SHT_PROGBITS'] and sec.header.sh_addr > 0x0:
             print 'Section Header #%d - %s' % (ndx, sec.name)
-            mode = None
-
-            if bin.header.e_machine == ehdr_machine['EM_X86_64']:
-                mode = Decode64Bits
-            elif bin.header.e_machine == ehdr_machine['EM_386']:
-                mode = Decode32Bits
-
-            if not mode:
-                print "Cannot disassemble this binary file, its e_machine is not handled by distorm64."
-                sys.exit(1)
 
             disas_list = Decode(sec.header.sh_addr, str(sec.data), mode)
 
             print 'Assembler:'
             for i in disas_list:
-                print "\t0x%08x (%02x) %-20s %s" % (i[0],  i[1],  i[3],  i[2])
+                print "\t0x%08x (%02x) %-20s %s" % (i[0], i[1], i[3], i[2])
             print '\n'
-
-        ndx += 1
-        continue
 
     print 'Section Header #%d - %s' % (ndx, sec.name)
     ndx += 1
