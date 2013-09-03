@@ -15,7 +15,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# Relocation elements  
+""" RelocationEntry and RelocationAEntry classes """
 
 from elf.core.property import ARCH_32, ARCH_64
 from elf.core.header import Header
