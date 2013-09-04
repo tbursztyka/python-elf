@@ -19,6 +19,7 @@
 
 from elf.core.property import VALUE_FIXED, VALUE_BITWISE
 from elf.core.header import Header
+from elf.utils import mirrorDict
 
 dhdr_tag = {
     'DT_NULL'                       : 0,
@@ -62,7 +63,7 @@ dhdr_tag = {
     'DT_HIPROC'                     : 0x7fffffff,
     'DT_PROCNUM'                    : 0x32,
     }
-for key,value in dhdr_tag.items(): dhdr_tag[value] = key
+mirrorDict(dhdr_tag)
 
 dhdr_mips_tag = {
     'DT_MIPS_RLD_VERSION'           : 0x70000001,

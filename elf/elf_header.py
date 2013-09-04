@@ -17,8 +17,10 @@
 
 """ Eident and ElfHeader classes """
 
-from elf.core.property import ARCH_32, ARCH_64, LITTLE_ENDIAN, BIG_ENDIAN, VALUE_FIXED, VALUE_BITWISE
+from elf.core.property import ARCH_32, ARCH_64, LITTLE_ENDIAN, BIG_ENDIAN, \
+                                                VALUE_FIXED, VALUE_BITWISE
 from elf.core.header import Header
+from elf.utils import mirrorDict
 from struct import calcsize
 
 ehdr_magic = {
@@ -27,7 +29,7 @@ ehdr_magic = {
     'ELFMAG2' : 'L',
     'ELFMAG3' : 'F',
     }
-for key,value in ehdr_magic.items(): ehdr_magic[value] = key
+mirrorDict(ehdr_magic)
 
 ehdr_class = {
     'ELFCLASSNONE' : 0,
@@ -35,7 +37,7 @@ ehdr_class = {
     'ELFCLASS64'   : 2,
     'ELFCLASSNUM'  : 3,
     }
-for key,value in ehdr_class.items(): ehdr_class[value] = key
+mirrorDict(ehdr_class)
 
 ehdr_encoding = {
     'ELFDATANONE' : 0,
@@ -43,7 +45,7 @@ ehdr_encoding = {
     'ELFDATA2MSB' : 2,
     'ELFDATANUM'  : 3,
     }
-for key,value in ehdr_encoding.items(): ehdr_encoding[value] = key
+mirrorDict(ehdr_encoding)
 
 ehdr_osabi = {
     'ELFOSABI_NONE'       : 0,
@@ -61,7 +63,7 @@ ehdr_osabi = {
     'ELFOSABI_ARM'        : 97,
     'ELFOSABI_STANDALONE' : 255,
     }
-for key,value in ehdr_osabi.items(): ehdr_osabi[value] = key
+mirrorDict(ehdr_osabi)
 
 ehdr_type = {
     'ET_NONE'   : 0,
@@ -75,7 +77,7 @@ ehdr_type = {
     'ET_LOPROC' : 0xff00,
     'ET_HIPROC' : 0xffff,
     }
-for key,value in ehdr_type.items(): ehdr_type[value] = key
+mirrorDict(ehdr_type)
 
 ehdr_machine = {
     'EM_NONE'        : 0,
@@ -155,14 +157,14 @@ ehdr_machine = {
     'EM_NUM'         : 95,
     'EM_ALPHA'       : 0x9026,
     }
-for key,value in ehdr_machine.items(): ehdr_machine[value] = key
+mirrorDict(ehdr_machine)
 
 ehdr_version = {
     'EV_NONE'    : 0,
     'EV_CURRENT' : 1,
     'EV_NUM'     : 2,
     }
-for key,value in ehdr_version.items(): ehdr_version[value] = key
+mirrorDict(ehdr_version)
 
 ehdr_encoding = {
     'ELFDATANONE' : 0,
@@ -170,7 +172,7 @@ ehdr_encoding = {
     'ELFDATA2MSB' : 2,
     'ELFDATANUM'  : 3,
     }
-for key,value in ehdr_encoding.items(): ehdr_encoding[value] = key
+mirrorDict(ehdr_encoding)
 
 
 class Eident( Header ):

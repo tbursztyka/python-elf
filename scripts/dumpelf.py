@@ -45,18 +45,18 @@ except:
         pass
 
 if len(sys.argv) <= 1:
-    print "dumpelf.py needs at least 1 argument."
-    sys.exit(-1)
+    print('dumpelf.py needs at least 1 argument.')
+    sys.exit(1)
 
 option_list = [
-    make_option("-a", "--all", help="display everything (quite verbose), but do not disassemble.",
-                action="store_true", dest="verbose"),
-    make_option("-p", "--programs", help="display only Program headers.",
-                action="store_true", dest="disp_programs"),
-    make_option("-s", "--sections", help="display only Section headers.",
-                action="store_true", dest="disp_sections"),
-    make_option("-d", "--disassemble", help="disassemble relevant part. (needs distorm64 module)",
-                action="store_true", dest="disassemble"),
+    make_option('-a', '--all', help='display everything (quite verbose), but do not disassemble.',
+                action='store_true', dest='verbose'),
+    make_option('-p', '--programs', help='display only Program headers.',
+                action='store_true', dest='disp_programs'),
+    make_option('-s', '--sections', help='display only Section headers.',
+                action='store_true', dest='disp_sections'),
+    make_option('-d', '--disassemble', help='disassemble relevant part. (needs distorm64 module)',
+                action='store_true', dest='disassemble'),
     ]
 
 parser = OptionParser(option_list=option_list)
@@ -71,111 +71,111 @@ disp_sections = options.disp_sections
 disassemble = options.disassemble
 
 if cannot_disassemble:
-    print "distorm module is not present on your system."
-    print "Disassemble capability is disabled."
+    print('distorm module is not present on your system.')
+    print('Disassemble capability is disabled.')
     disassemble = False
 
-binfile = sys.argv[len(sys.argv)-1]
+binaryfile = sys.argv[len(sys.argv)-1]
 
 try:
-    bin = Elf(binfile)
-except Exception, e:
-    print "Could not open %s - %s" % (binfile, e)
-    sys.exit(-1)
+    binary = Elf(binaryfile)
+except Exception as e:
+    print('Could not open %s - %s' % (binaryfile, e))
+    sys.exit(1)
 
-print 'ELF Header:'
-print '\te_ident\n\t['
-printHeader(bin.header.e_ident)
-print '\t]'
-printHeader(bin.header)
-print '\n'
+print('ELF Header:')
+print('\te_ident\n\t[')
+printHeader(binary.header.e_ident)
+print('\t]')
+printHeader(binary.header)
+print('\n')
 
 if not disp_programs and not disp_sections and not verbose and not disassemble:
     sys.exit(0)
 
 mode = None
 if disassemble:
-    if bin.header.e_machine == ehdr_machine['EM_X86_64']:
+    if binary.header.e_machine == ehdr_machine['EM_X86_64']:
         mode = Decode64Bits
-    elif bin.header.e_machine == ehdr_machine['EM_386']:
+    elif binary.header.e_machine == ehdr_machine['EM_386']:
         mode = Decode32Bits
     else:
-        print "Cannot disassemble this binary file, its e_machine is not handled"
+        print('Cannot disassemble this binary file, its e_machine is not handled')
         sys.exit(1)
 
 if disp_programs or verbose:
     ndx = 0
-    for prg in bin.programs:
+    for prg in binary.programs:
         if disassemble:
             disas_list = Decode(prg.header.p_vaddr, str(prg.data), mode)
-            print 'Program Header #%d' % (ndx)
+            print('Program Header #%d' % (ndx))
 
-            print 'Assembler:'
+            print('Assembler:')
             for i in disas_list:
-                print "\t0x%08x (%02x) %-20s %s" % (i[0], i[1], i[3], i[2])
-            print '\n'
+                print('\t0x%08x (%02x) %-20s %s' % (i[0], i[1], i[3], i[2]))
+            print('\n')
 
-        print 'Program Header #%d' % (ndx)
+        print('Program Header #%d' % (ndx))
         printHeader(prg.header)
         ndx += 1
 
-        print '\n'
+        print('\n')
 
 if not disp_sections and not verbose:
     sys.exit(0)
 
 ndx = 0
-for sec in bin.sections:
+for sec in binary.sections:
     if disassemble:
         if sec.header.sh_type == shdr_type['SHT_PROGBITS'] and sec.header.sh_addr > 0x0:
-            print 'Section Header #%d - %s' % (ndx, sec.name)
+            print('Section Header #%d - %s' % (ndx, sec.name))
 
             disas_list = Decode(sec.header.sh_addr, str(sec.data), mode)
 
-            print 'Assembler:'
+            print('Assembler:')
             for i in disas_list:
-                print "\t0x%08x (%02x) %-20s %s" % (i[0], i[1], i[3], i[2])
-            print '\n'
+                print('\t0x%08x (%02x) %-20s %s' % (i[0], i[1], i[3], i[2]))
+            print('\n')
 
-    print 'Section Header #%d - %s' % (ndx, sec.name)
+    print('Section Header #%d - %s' % (ndx, sec.name))
     ndx += 1
     printHeader(sec.header)
 
     if not verbose:
-        print '\n'
+        print('\n')
         continue
 
     htype = sec.header.sh_type
     if htype == shdr_type['SHT_SYMTAB'] or htype == shdr_type['SHT_DYNSYM']:
-        print '\n\tSymbol tables entries:'
+        print('\n\tSymbol tables entries:')
         sym_ndx = 0
         for entry in sec.symtab:
-            print '\t%d \"%s\"' % (sym_ndx, entry.name)
+            print('\t%d \"%s\"' % (sym_ndx, entry.name))
             printHeader(entry)
-            print '\n'
+            print('\n')
             sym_ndx += 1
 
     elif htype == shdr_type['SHT_DYNAMIC']:
-        print '\n\tDynamic tables entries:'
+        print('\n\tDynamic tables entries:')
         dyn_ndx = 0
         for entry in sec.dynamic:
-            print '\t%d' % (dyn_ndx)
+            print('\t%d' % (dyn_ndx))
             printHeader(entry)
-            print '\n'
+            print('\n')
             dyn_ndx += 1
 
     elif htype == shdr_type['SHT_NOTE']:
-        print '\n\tNote entrie(s):'
+        print('\n\tNote entrie(s):')
         note_ndx = 0
         for entry in sec.note:
-            print '\t%d' % (note_ndx)
+            print('\t%d' % (note_ndx))
             printHeader(entry.header)
-            print '\t-> name %s' % (entry.name)
-            print '\t-> desc %s' % (entry.desc)
-            print '\n'
+            print('\t-> name %s' % (entry.name))
+            print('\t-> desc %s' % (entry.desc))
+            print('\n')
             note_ndx += 1
 
-    print '\n'
+    print('\n')
 
 #######
 # EOF #

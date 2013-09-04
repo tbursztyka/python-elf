@@ -20,6 +20,7 @@
 from elf.core.property import VALUE_FIXED, VALUE_BITWISE
 from elf.core.header import Header
 from elf.core.page import Page
+from elf.utils import mirrorDict
 
 phdr_type = {
     'PT_NULL'              : 0,
@@ -70,7 +71,7 @@ phdr_type = {
     'PT_IA_64_HP_HSL_ANOT' : (0x60000000 + 0x13),
     'PT_IA_64_HP_STACK'    : (0x60000000 + 0x14),
     }
-for key,value in phdr_type.items(): phdr_type[value] = key
+mirrorDict(phdr_type)
 
 phdr_flags = {
     'PF_X'              : (1 << 0),
@@ -102,7 +103,8 @@ phdr_flags = {
     'PF_ARM_SB'         : 0x10000000,
     'PF_IA_64_NORECOV'  : 0x80000000,
     }
-for key,value in phdr_flags.items(): phdr_flags[value] = key
+mirrorDict(phdr_flags)
+
 
 class ProgramHeader( Header ):
     descriptions_32 = [ 'p_type', 'p_offset', 'p_vaddr', 'p_paddr',

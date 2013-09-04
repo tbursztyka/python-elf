@@ -15,21 +15,28 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-# Utility functions
+""" Utility functions """
+
+def mirrorDict(dict_var):
+    key_val = [(val, key) for (key, val) in dict_var.items()]
+    for key,val in key_val:
+        dict_var[val] = key
 
 def getNameFromStrTab(index, strtab):
     if index >= len(strtab):
         return 'null'
 
-    name = ''
+    name = b''
     l = strtab[index]
-    while l != '\0':
+    while l != b'\x00':
         name += l
         index +=1
         l = strtab[index]
 
     if len(name) == 0:
         name = 'null'
+    else:
+        name = name.decode('utf-8')
 
     return name
 

@@ -66,7 +66,10 @@ class Chunk( object ):
     def __del__(self):
         """ Finalize before deletion """
 
-        self.finalize()
+        try:
+            self.finalize()
+        except Exception:
+            pass
 
     def __getattr__(self, name):
         if name == 'size':
@@ -75,7 +78,7 @@ class Chunk( object ):
         try:
             return self.__dict__[name]
         except KeyError:
-            raise AttributeError, name
+            raise AttributeError(name)
 
     def __setattr__(self, name, value):
         """ Attribute setter rewrite """

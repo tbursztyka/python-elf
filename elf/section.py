@@ -20,6 +20,7 @@
 from elf.core.property import VALUE_FIXED, VALUE_BITWISE
 from elf.core.header import Header
 from elf.core.page import Page
+from elf.utils import mirrorDict
 from elf.symbol import SymbolTableEntry
 from elf.relocation import RelocationEntry, RelocationAEntry
 from elf.dynamic import DynamicSectionEntry
@@ -53,7 +54,7 @@ shdr_index = {
     'SHN_PARISC_ANSI_COMMON' : 0xff00,
     'SHN_PARISC_HUGE_COMMON' : 0xff01,
     }
-for key,value in shdr_index.items(): shdr_index[value] = key
+mirrorDict(shdr_index)
 
 shdr_type = {
     'SHT_NULL'               : 0,
@@ -92,7 +93,7 @@ shdr_type = {
     'SHT_LOUSER'             : 0x80000000,
     'SHT_HIUSER'             : 0x8fffffff,
     }
-for key,value in shdr_type.items(): shdr_type[value] = key
+mirrorDict(shdr_type)
 
 shdr_type_mips = {
     'SHT_MIPS_LIBLIST'       : 0x70000000,
@@ -165,7 +166,7 @@ shdr_flags = {
     'SHF_ORDERED'          : (1 << 30),
     'SHF_EXCLUDE'          : (1 << 31),
     }
-for key,value in shdr_flags.items(): shdr_flags[value] = key
+mirrorDict(shdr_flags)
 
 shdr_flags_mips = {
     'SHF_MIPS_GPREL'       : 0x10000000,
@@ -193,6 +194,7 @@ shdr_flags_ia64 = {
     'SHF_IA_64_SHORT'      : 0x10000000,
     'SHF_IA_64_NORECOV'    : 0x20000000,
     }
+
 
 class SectionHeader( Header ):
     descriptions = [ 'sh_name', 'sh_type', 'sh_flags', 'sh_addr',
@@ -251,7 +253,7 @@ class Section( Page ):
         """ Load a symbol table """
 
         off = self.offset_start
-        for ent_count in range(0, self.size/self.header.sh_entsize):
+        for ent_count in range(0, int(self.size/self.header.sh_entsize)):
             symtab_entry = SymbolTableEntry(self.prop, off)
 
             self.symtab.append(symtab_entry)
@@ -276,7 +278,7 @@ class Section( Page ):
 
         off = self.offset_start
 
-        for ent_count in range(0, self.size/self.header.sh_entsize):
+        for ent_count in range(0, int(self.size/self.header.sh_entsize)):
             if addends:
                 reloc = RelocationEntry(self.prop, off)
             else:
@@ -289,7 +291,7 @@ class Section( Page ):
         """ Load dynamic section entries """
 
         off = self.offset_start
-        for ent_count in range(0, self.size/self.header.sh_entsize):
+        for ent_count in range(0, int(self.size/self.header.sh_entsize)):
             dynamic_entry = DynamicSectionEntry(self.prop, off)
 
             self.dynamic.append(dynamic_entry)

@@ -38,23 +38,26 @@ def getElementAsString(hdr, fmt, elt, max_len):
         disp_str += '%s' % '%s'
         disp_str = disp_str % str(value)
     else:
+        if fmt == 's':
+            value = value.decode('utf-8')
+
         disp_str += '%s' % formats[fmt]
         disp_str = disp_str % (value)
 
-    if hdr.hr_values.has_key(elt):
+    if elt in hdr.hr_values:
         k_elt = hdr.hr_values.get(elt)
     else:
         return disp_str
 
     if k_elt[0] == VALUE_FIXED:
-        if k_elt[1].has_key(value):
+        if value in k_elt[1]:
             disp_str += '\t ( '+k_elt[1].get(value)+' )'
         else:
             disp_str += '\t ( UNKNOWN )'
     elif k_elt[0] == VALUE_BITWISE and value != 0:
         tested = 0
         disp_str += '\t ('
-        for key in k_elt[1].iterkeys():
+        for key in k_elt[1].keys():
             if type(key) != str:
                 continue
 
@@ -82,19 +85,19 @@ def printHeader(hdr):
         fmt = hdr.format[hdr.descriptions.index(elt)]
         fmt = fmt[len(fmt)-1]
 
-        print getElementAsString(hdr, fmt, elt, max_len)
+        print(getElementAsString(hdr, fmt, elt, max_len))
 
     if hdr.cf_descriptions:
         for elt in hdr.cf_descriptions:
             if len(elt) > max_len:
                 max_len = len(elt)
 
-        print '\n\tCompound fields:'
+        print('\n\tCompound fields:')
         for elt in hdr.cf_descriptions:
             fmt = hdr.cf_format[hdr.cf_descriptions.index(elt)]
             fmt = fmt[len(fmt)-1]
 
-            print getElementAsString(hdr, fmt, elt, max_len)
+            print(getElementAsString(hdr, fmt, elt, max_len))
 
 #######
 # EOF #

@@ -4,7 +4,7 @@ import sys
 from elf.elf_binary import Elf
 
 if len(sys.argv) <= 1 or len(sys.argv) > 2:
-    print "You should provide only one binary file as input"
+    print('You should provide only one binary file as input')
     sys.exit(1)
 
 binfile = sys.argv[len(sys.argv)-1]

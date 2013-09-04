@@ -20,6 +20,7 @@
 from elf.core.property import VALUE_FIXED
 from elf.core.header import Header
 from elf.core.page import Page
+from elf.utils import mirrorDict
 from struct import calcsize
 
 nhdr_core_type = {
@@ -41,12 +42,13 @@ nhdr_core_type = {
     'NT_PRFPXREG'   : 20,
     'NT_PRXFPREG'   : 0x46e62b7f,
     }
-for key,value in nhdr_core_type.items(): nhdr_core_type[value] = key
+mirrorDict(nhdr_core_type)
 
 nhdr_type = {
     'NT_VERSION'    : 1,
     }
-for key,value in nhdr_type.items(): nhdr_type[value] = key
+mirrorDict(nhdr_type)
+
 
 class NoteHeader( Header ):
     descriptions = [ 'n_namesz', 'n_descz', 'n_type' ]

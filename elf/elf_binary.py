@@ -23,6 +23,7 @@ from elf.section import SectionHeader, Section, shdr_type
 from elf.symbol import symtab_type
 from elf.program import ProgramHeader, Program
 from elf.utils import getNameFromStrTab, compareChunks, orderChunks
+from functools import cmp_to_key
 from os.path import getsize
 
 """ Elf class """
@@ -63,7 +64,7 @@ class Elf( Chunk ):
 
         # Now, creating the chunks hierarchy
         chunks = self.chunks()
-        chunks_sorted = sorted(chunks, cmp=compareChunks)
+        chunks_sorted = sorted(chunks, key=cmp_to_key(compareChunks))
         orderChunks(chunks_sorted)
 
     def load_binary(self, filename=None, offset=None, filemap=None):
@@ -72,7 +73,7 @@ class Elf( Chunk ):
         if filename == None:
             filename = self.prop.filename
 
-        self.prop.file_src = file(filename, 'r+')
+        self.prop.file_src = open(filename, 'r+')
         self.prop.map_src = mmap(self.prop.file_src.fileno(),
                                  0, access=self.prop.mode)
 
@@ -282,10 +283,10 @@ class Elf( Chunk ):
         if self.prop.backup:
             filename = self.prop.filename+'_mod'
 
-        f_dst = file(filename, 'wb')
+        f_dst = open(filename, 'wb')
         f_dst.write('\0'*PAGESIZE)
         f_dst.close()
-        self.prop.file_dst = file(filename, 'r+')
+        self.prop.file_dst = open(filename, 'r+')
         self.prop.map_dst = mmap(self.prop.file_dst.fileno(),
                                  0, access=self.prop.mode)
         self.prop.map_dst.resize(self.size)
