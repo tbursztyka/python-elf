@@ -51,7 +51,7 @@ def getElementAsString(hdr, fmt, elt, max_len):
 
     if k_elt[0] == VALUE_FIXED:
         if value in k_elt[1]:
-            disp_str += '\t ( '+k_elt[1].get(value)+' )'
+            disp_str += '\t ( ' + k_elt[1].get(value) + ' )'
         else:
             disp_str += '\t ( UNKNOWN )'
     elif k_elt[0] == VALUE_BITWISE and value != 0:
@@ -67,7 +67,7 @@ def getElementAsString(hdr, fmt, elt, max_len):
                 tested |= val
 
         if (tested ^ value) != 0:
-            disp_str += ' UNKNOWN ('+str(tested ^ value)+') '
+            disp_str += ' UNKNOWN (' + str(tested ^ value) + ') '
         disp_str += ')'
     else:
         disp_str += '\t ( UNDEF )'
@@ -102,4 +102,3 @@ def printHeader(hdr):
 #######
 # EOF #
 #######
-

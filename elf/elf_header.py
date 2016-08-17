@@ -29,7 +29,7 @@ ehdr_magic = {
     'ELFMAG2' : 'L',
     'ELFMAG3' : 'F',
     }
-mirrorDict(ehdr_magic)
+ehdr_magic = mirrorDict(ehdr_magic)
 
 ehdr_class = {
     'ELFCLASSNONE' : 0,
@@ -37,7 +37,7 @@ ehdr_class = {
     'ELFCLASS64'   : 2,
     'ELFCLASSNUM'  : 3,
     }
-mirrorDict(ehdr_class)
+ehdr_class = mirrorDict(ehdr_class)
 
 ehdr_encoding = {
     'ELFDATANONE' : 0,
@@ -45,7 +45,7 @@ ehdr_encoding = {
     'ELFDATA2MSB' : 2,
     'ELFDATANUM'  : 3,
     }
-mirrorDict(ehdr_encoding)
+ehdr_encoding = mirrorDict(ehdr_encoding)
 
 ehdr_osabi = {
     'ELFOSABI_NONE'       : 0,
@@ -63,7 +63,7 @@ ehdr_osabi = {
     'ELFOSABI_ARM'        : 97,
     'ELFOSABI_STANDALONE' : 255,
     }
-mirrorDict(ehdr_osabi)
+ehdr_osabi = mirrorDict(ehdr_osabi)
 
 ehdr_type = {
     'ET_NONE'   : 0,
@@ -77,7 +77,7 @@ ehdr_type = {
     'ET_LOPROC' : 0xff00,
     'ET_HIPROC' : 0xffff,
     }
-mirrorDict(ehdr_type)
+ehdr_type = mirrorDict(ehdr_type)
 
 ehdr_machine = {
     'EM_NONE'        : 0,
@@ -157,23 +157,14 @@ ehdr_machine = {
     'EM_NUM'         : 95,
     'EM_ALPHA'       : 0x9026,
     }
-mirrorDict(ehdr_machine)
+ehdr_machine = mirrorDict(ehdr_machine)
 
 ehdr_version = {
     'EV_NONE'    : 0,
     'EV_CURRENT' : 1,
     'EV_NUM'     : 2,
     }
-mirrorDict(ehdr_version)
-
-ehdr_encoding = {
-    'ELFDATANONE' : 0,
-    'ELFDATA2LSB' : 1,
-    'ELFDATA2MSB' : 2,
-    'ELFDATANUM'  : 3,
-    }
-mirrorDict(ehdr_encoding)
-
+ehdr_version = mirrorDict(ehdr_version)
 
 class Eident( Header ):
     descriptions = [ 'ei_magic', 'ei_class', 'ei_data', 'ei_version',
@@ -235,4 +226,3 @@ class ElfHeader( Header ):
 #######
 # EOF #
 #######
-

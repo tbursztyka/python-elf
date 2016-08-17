@@ -71,7 +71,7 @@ phdr_type = {
     'PT_IA_64_HP_HSL_ANOT' : (0x60000000 + 0x13),
     'PT_IA_64_HP_STACK'    : (0x60000000 + 0x14),
     }
-mirrorDict(phdr_type)
+phdr_type = mirrorDict(phdr_type)
 
 phdr_flags = {
     'PF_X'              : (1 << 0),
@@ -103,7 +103,7 @@ phdr_flags = {
     'PF_ARM_SB'         : 0x10000000,
     'PF_IA_64_NORECOV'  : 0x80000000,
     }
-mirrorDict(phdr_flags)
+phdr_flags = mirrorDict(phdr_flags)
 
 
 class ProgramHeader( Header ):
@@ -140,4 +140,3 @@ class Program( Page ):
 #######
 # EOF #
 #######
-

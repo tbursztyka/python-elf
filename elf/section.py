@@ -54,7 +54,7 @@ shdr_index = {
     'SHN_PARISC_ANSI_COMMON' : 0xff00,
     'SHN_PARISC_HUGE_COMMON' : 0xff01,
     }
-mirrorDict(shdr_index)
+shdr_index = mirrorDict(shdr_index)
 
 shdr_type = {
     'SHT_NULL'               : 0,
@@ -93,7 +93,7 @@ shdr_type = {
     'SHT_LOUSER'             : 0x80000000,
     'SHT_HIUSER'             : 0x8fffffff,
     }
-mirrorDict(shdr_type)
+shdr_type = mirrorDict(shdr_type)
 
 shdr_type_mips = {
     'SHT_MIPS_LIBLIST'       : 0x70000000,
@@ -166,7 +166,7 @@ shdr_flags = {
     'SHF_ORDERED'          : (1 << 30),
     'SHF_EXCLUDE'          : (1 << 31),
     }
-mirrorDict(shdr_flags)
+shdr_flags = mirrorDict(shdr_flags)
 
 shdr_flags_mips = {
     'SHF_MIPS_GPREL'       : 0x10000000,
@@ -338,4 +338,3 @@ class Section( Page ):
 #######
 # EOF #
 #######
-

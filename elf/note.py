@@ -42,12 +42,12 @@ nhdr_core_type = {
     'NT_PRFPXREG'   : 20,
     'NT_PRXFPREG'   : 0x46e62b7f,
     }
-mirrorDict(nhdr_core_type)
+nhdr_core_type = mirrorDict(nhdr_core_type)
 
 nhdr_type = {
     'NT_VERSION'    : 1,
     }
-mirrorDict(nhdr_type)
+nhdr_type = mirrorDict(nhdr_type)
 
 
 class NoteHeader( Header ):
@@ -77,4 +77,3 @@ class Note( Page ):
 #######
 # EOF #
 #######
-

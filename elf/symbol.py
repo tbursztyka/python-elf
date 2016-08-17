@@ -32,7 +32,7 @@ symtab_bind = {
     'STB_HIPROC'            : 15,
     'STB_MIPS_SPLIT_COMMON' : 13,
     }
-mirrorDict(symtab_bind)
+symtab_bind = mirrorDict(symtab_bind)
 
 symtab_type = {
     'STT_NOTYPE'           : 0,
@@ -53,7 +53,7 @@ symtab_type = {
     'STT_HP_STUB'          : (10 + 0x2),
     'STT_ARM_TFUNC'        : 0xd,
     }
-mirrorDict(symtab_type)
+symtab_type = mirrorDict(symtab_type)
 
 symtab_visibility = {
     'STV_DEFAULT'   : 0,
@@ -61,14 +61,14 @@ symtab_visibility = {
     'STV_HIDDEN'    : 2,
     'STV_PROTECTED' : 3,
     }
-mirrorDict(symtab_visibility)
+symtab_visibility = mirrorDict(symtab_visibility)
 
 syminfo_boundto = {
     'SYMINFO_BT_SELF'       : 0xffff,
     'SYMINFO_BT_PARENT'     : 0xfffe,
     'SYMINFO_BT_LOWRESERVE' : 0xff00,
     }
-mirrorDict(syminfo_boundto)
+syminfo_boundto = mirrorDict(syminfo_boundto)
 
 syminfo_flags = {
     'SYMINFO_FLG_DIRECT'   : 0x0001,
@@ -76,14 +76,14 @@ syminfo_flags = {
     'SYMINFO_FLG_COPY'     : 0x0004,
     'SYMINFO_FLG_LAZYLOAD' : 0x0008,
     }
-mirrorDict(syminfo_flags)
+syminfo_flags = mirrorDict(syminfo_flags)
 
 syminfo_version = {
     'SYMINFO_NONE'          : 0,
     'SYMINFO_CURRENT'       : 1,
     'SYMINFO_NUM'           : 2,
     }
-mirrorDict(syminfo_version)
+syminfo_version = mirrorDict(syminfo_version)
 
 
 class SymbolTableEntry( Header ):
@@ -145,4 +145,3 @@ class SymbolInfo( Header ):
 #######
 # EOF #
 #######
-

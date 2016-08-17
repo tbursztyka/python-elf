@@ -18,9 +18,15 @@
 """ Utility functions """
 
 def mirrorDict(dict_var):
-    key_val = [(val, key) for (key, val) in dict_var.items()]
-    for key,val in key_val:
-        dict_var[val] = key
+    new_dict = {}
+    for key,val in dict_var.items():
+        if key in new_dict.keys() or val in new_dict.keys():
+            continue # Les's skip aliases
+
+        new_dict[key] = val
+        new_dict[val] = key
+
+    return new_dict
 
 def getNameFromStrTab(index, strtab):
     if index >= len(strtab):
@@ -71,4 +77,3 @@ def orderChunks(lst, n_p = 0, n_c = 1):
 #######
 # EOF #
 #######
-

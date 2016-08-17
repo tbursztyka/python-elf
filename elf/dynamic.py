@@ -63,7 +63,7 @@ dhdr_tag = {
     'DT_HIPROC'                     : 0x7fffffff,
     'DT_PROCNUM'                    : 0x32,
     }
-mirrorDict(dhdr_tag)
+dhdr_tag = mirrorDict(dhdr_tag)
 
 dhdr_mips_tag = {
     'DT_MIPS_RLD_VERSION'           : 0x70000001,
@@ -163,4 +163,3 @@ class DynamicSectionEntry( Header ):
 #######
 # EOF #
 #######
-
